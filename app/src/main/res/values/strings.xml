@@ -1,0 +1,39 @@
+<resources>
+    <string name="app_name">Pop-Up View</string>
+
+    <string name="app_settings_title">Pop-Up View Settings</string>
+    <string name="grant_overlay_permission">Grant \'Draw over other apps\' Permission</string>
+    <string name="enable_accessibility_service">Enable Accessibility Service</string>
+    <string name="selected_apps">Selected Apps</string>
+    <string name="no_apps_selected">No apps selected</string>
+    <string name="manage_apps">Manage Apps</string>
+    <string name="gesture_settings">Gesture Settings</string>
+    <string name="trigger_width">Trigger Width</string>
+    <string name="trigger_height">Trigger Height</string>
+    <string name="swipe_angle_tolerance">Swipe Angle Tolerance</string>
+    <string name="select_up_to_x_apps">Select up to %d Apps</string>
+    <string name="selection_limit_toast">You can only select up to %d apps</string>
+    <string name="cannot_launch_app">Cannot launch this app</string>
+
+    <string name="top_bar_title">App Popup</string>
+    <string name="main_hint">Lightweight Popup</string>
+    <string name="main_ps">Quickly open apps in popup windows with gestures, convenient and efficient</string>
+    <string name="manage_label_title">Manage Floating Menu</string>
+    <string name="manage_label_summary">Tap to manage app list</string>
+
+    <string name="popup_settings_title">Pop-Up View Settings</string>
+
+    <string name="popup_double_tap_exit_title">Double-tap empty area to exit</string>
+    <string name="popup_double_tap_exit_summary">When enabled, double-tapping outside the Pop-Up will close it.</string>
+
+    <string name="popup_notification_portrait_title">Notification → Pop-Up (portrait)</string>
+    <string name="popup_notification_portrait_summary">Open apps in Pop-Up when tapping notifications in portrait orientation.</string>
+
+    <string name="popup_notification_landscape_title">Notification → Pop-Up (landscape)</string>
+    <string name="popup_notification_landscape_summary">Open apps in Pop-Up when tapping notifications in landscape orientation.</string>
+    <string name="popup_gesture">Wake with Gesture</string>
+    <string name="popup_gesture_summary">Quickly open the menu by sliding from the left and right sides of the screen bottom to the center</string>
+
+    <string name="popupview_summary">Open apps in a floating pop-up window for multitasking</string>
+
+</resources>

@@ -1,0 +1,47 @@
+android_app {
+    name: "AviumSystemUIEX",
+
+    srcs: ["src/**/*.java", "src/**/*.kt"],
+    resource_dirs: ["src/main/res"],
+    manifest: "src/main/AndroidManifest.xml",
+
+    platform_apis: true,
+    system_ext_specific: true,
+    certificate: "platform",
+    privileged: true,
+    required: ["privapp_whitelist_org.avium.systemuiex"],
+
+    static_libs: [
+        "kotlin-stdlib",
+        "androidx.preference_preference",
+        "SettingsLib",
+        "androidx.compose.runtime_runtime",
+        "androidx.compose.foundation_foundation",
+        "androidx.compose.material_material",
+        "androidx.compose.ui_ui",
+        "androidx.compose.material3_material3",
+        "androidx.activity_activity-compose",
+        "accompanist-drawablepainter",
+    ],
+
+    optimize: {
+        optimize: true,
+        proguard_flags_files: ["proguard-rules.pro"],
+        shrink_resources: true,
+    },
+
+}
+
+android_library_import {
+    name: "accompanist-drawablepainter",
+    aars: ["src/main/libs/accompanist-drawablepainter-0.37.3.aar"],
+    sdk_version: "current",
+}
+
+prebuilt_etc {
+    name: "privapp_whitelist_org.avium.systemuiex",
+    system_ext_specific: true,
+    sub_dir: "permissions",
+    src: "privapp_whitelist_org.avium.systemuiex.xml",
+    filename_from_src: true,
+}
