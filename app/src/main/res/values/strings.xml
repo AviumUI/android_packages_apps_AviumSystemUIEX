@@ -34,6 +34,10 @@
     <string name="popup_gesture">Wake with Gesture</string>
     <string name="popup_gesture_summary">Quickly open the menu by sliding from the left and right sides of the screen bottom to the center</string>
 
+    <string name="app_launch_mode_title">App Launch Mode</string>
+    <string name="app_launch_mode_bubble">Bubble Window</string>
+    <string name="app_launch_mode_lightweight">Lightweight Window (beta)</string>
+
     <string name="popupview_summary">Open apps in a floating pop-up window for multitasking</string>
 
 </resources>

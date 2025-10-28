@@ -6,5 +6,7 @@
         <permission name="android.permission.QUERY_ALL_PACKAGES" />
         <permission name="android.permission.FOREGROUND_SERVICE" />
         <permission name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+        <permission name="android.permission.MANAGE_ACTIVITY_TASKS" />
+        <permission name="com.android.systemui.permission.LAUNCH_BUBBLE" />
     </privapp-permissions>
 </permissions>

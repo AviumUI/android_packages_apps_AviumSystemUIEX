@@ -30,5 +30,10 @@
     <string name="popup_notification_landscape_summary">横屏模式下点击通知时以小窗打开应用。</string>
     <string name="popup_gesture">使用手势唤醒</string>
     <string name="popup_gesture_summary">通过在屏幕底部左右两侧向中心滑动快捷打开菜单</string>
+    
+    <string name="app_launch_mode_title">应用启动方式</string>
+    <string name="app_launch_mode_bubble">气泡窗口</string>
+    <string name="app_launch_mode_lightweight">轻量小窗(beta)</string>
+    
     <string name="popupview_summary">在通过特定手势启用轻量小窗</string>
 </resources>

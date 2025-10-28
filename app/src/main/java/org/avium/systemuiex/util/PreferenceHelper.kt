@@ -12,6 +12,7 @@ object PreferenceHelper {
     const val KEY_POPUP_DOUBLE_TAP_EXIT = "pop_up_view_double_tap_exit"
     const val KEY_POPUP_NOTIFICATION_PORTRAIT = "pop_up_view_notification_portrait"
     const val KEY_POPUP_NOTIFICATION_LANDSCAPE = "pop_up_view_notification_landscape"
+    const val KEY_APP_LAUNCH_MODE = "app_launch_mode"
 
     const val SYS_PROP_POPUP_GESTURE = "persist.avium.popup_gesture"
     const val KEY_POPUP_GESTURE_FALLBACK = "pop_up_view_gesture_fallback"

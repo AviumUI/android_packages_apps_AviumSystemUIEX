@@ -34,6 +34,7 @@ fun HomeScreen(
     var doubleTapExit by remember { mutableStateOf(false) }
     var notifPortrait by remember { mutableStateOf(false) }
     var notifLandscape by remember { mutableStateOf(false) }
+    var useBubbleMode by remember { mutableStateOf(true) }
 
     val popupGestureEnabled = remember {
         mutableStateOf(
@@ -46,6 +47,7 @@ fun HomeScreen(
         doubleTapExit = PreferenceHelper.getBoolean(context, PreferenceHelper.KEY_POPUP_DOUBLE_TAP_EXIT, false)
         notifPortrait = PreferenceHelper.getBoolean(context, PreferenceHelper.KEY_POPUP_NOTIFICATION_PORTRAIT, true)
         notifLandscape = PreferenceHelper.getBoolean(context, PreferenceHelper.KEY_POPUP_NOTIFICATION_LANDSCAPE, true)
+        useBubbleMode = PreferenceHelper.getBoolean(context, PreferenceHelper.KEY_APP_LAUNCH_MODE, true)
     }
 
     Scaffold(
@@ -136,6 +138,17 @@ fun HomeScreen(
             )
 
             SettingSwitchRow(
+                title = stringResource(R.string.app_launch_mode_title),
+                summary = if (useBubbleMode) stringResource(R.string.app_launch_mode_bubble) else stringResource(R.string.app_launch_mode_lightweight),
+                checked = useBubbleMode,
+                onCheckedChange = { checked ->
+                    useBubbleMode = checked
+                    PreferenceHelper.setBoolean(context, PreferenceHelper.KEY_APP_LAUNCH_MODE, checked)
+                }
+            )
+
+            /* 
+            SettingSwitchRow(
                 title = stringResource(R.string.popup_double_tap_exit_title),
                 summary = stringResource(R.string.popup_double_tap_exit_summary),
                 checked = doubleTapExit,
@@ -164,6 +177,7 @@ fun HomeScreen(
                     PreferenceHelper.setBoolean(context, PreferenceHelper.KEY_POPUP_NOTIFICATION_LANDSCAPE, checked)
                 }
             )
+            */
 
             Spacer(modifier = Modifier.height(32.dp))
         }

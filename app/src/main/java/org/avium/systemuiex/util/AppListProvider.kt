@@ -14,7 +14,7 @@ object AppListProvider {
         val mainIntent = Intent(Intent.ACTION_MAIN, null).apply {
             addCategory(Intent.CATEGORY_LAUNCHER)
         }
-        val resolveInfos = pm.queryIntentActivities(mainIntent, PackageManager.MATCH_DEFAULT_ONLY)
+        val resolveInfos = pm.queryIntentActivities(mainIntent, PackageManager.GET_META_DATA or PackageManager.MATCH_ALL)
         resolveInfos.mapNotNull { resolveInfo ->
             val packageName = resolveInfo.activityInfo.packageName
             val appName = resolveInfo.loadLabel(pm).toString()

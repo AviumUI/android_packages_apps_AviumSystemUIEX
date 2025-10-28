@@ -21,6 +21,19 @@ object AppLauncher {
     */
 
     fun launchApp(context: Context, packageName: String) {
+        val useBubbleMode = PreferenceHelper.getBoolean(context, PreferenceHelper.KEY_APP_LAUNCH_MODE, true)
+        
+        if (useBubbleMode) {
+            val intent = Intent("org.avium.LAUNCH_BUBBLE")
+            intent.putExtra("package_name", packageName)
+            intent.addFlags(Intent.FLAG_RECEIVER_INCLUDE_BACKGROUND)
+            context.sendBroadcast(intent)
+        } else {
+            launchAppNormally(context, packageName)
+        }
+    }
+
+    private fun launchAppNormally(context: Context, packageName: String) {
         val intent = context.packageManager.getLaunchIntentForPackage(packageName)
         if (intent != null) {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
