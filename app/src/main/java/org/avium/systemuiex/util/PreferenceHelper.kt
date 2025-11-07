@@ -20,6 +20,11 @@ object PreferenceHelper {
     const val SYS_PROP_LAUNCHER_GESTURE = "persist.avium.launchergesture"
     const val KEY_LAUNCHER_GESTURE_FALLBACK = "launcher_gesture_fallback"
 
+    const val SYS_PROP_GESTURE_AREA_HEIGHT = "persist.avium.gesture_area_height_dp"
+    const val SYS_PROP_GESTURE_AREA_WIDTH = "persist.avium.gesture_area_width_dp"
+    const val KEY_GESTURE_AREA_HEIGHT_FALLBACK = "gesture_area_height_fallback"
+    const val KEY_GESTURE_AREA_WIDTH_FALLBACK = "gesture_area_width_fallback"
+
     const val KEY_TRIGGER_WIDTH = "trigger_width"
     const val KEY_TRIGGER_HEIGHT = "trigger_height"
     const val KEY_SWIPE_TOLERANCE = "swipe_tolerance"
@@ -107,6 +112,52 @@ object PreferenceHelper {
             }
         } catch (e: Exception) {
             getBoolean(context, KEY_LAUNCHER_GESTURE_FALLBACK, defaultValue)
+        }
+    }
+
+    fun setGestureAreaHeight(context: Context, value: Float) {
+        try {
+            SystemProperties.set(SYS_PROP_GESTURE_AREA_HEIGHT, value.toString())
+            val readBack = SystemProperties.get(SYS_PROP_GESTURE_AREA_HEIGHT, "0")
+            if (readBack != value.toString()) {
+                setFloat(context, KEY_GESTURE_AREA_HEIGHT_FALLBACK, value)
+            } else {
+                setFloat(context, KEY_GESTURE_AREA_HEIGHT_FALLBACK, value)
+            }
+        } catch (e: Exception) {
+            setFloat(context, KEY_GESTURE_AREA_HEIGHT_FALLBACK, value)
+        }
+    }
+
+    fun getGestureAreaHeight(context: Context, defaultValue: Float = 20f): Float {
+        return try {
+            val prop = SystemProperties.get(SYS_PROP_GESTURE_AREA_HEIGHT, defaultValue.toString())
+            prop.toFloatOrNull() ?: getFloat(context, KEY_GESTURE_AREA_HEIGHT_FALLBACK, defaultValue)
+        } catch (e: Exception) {
+            getFloat(context, KEY_GESTURE_AREA_HEIGHT_FALLBACK, defaultValue)
+        }
+    }
+
+    fun setGestureAreaWidth(context: Context, value: Float) {
+        try {
+            SystemProperties.set(SYS_PROP_GESTURE_AREA_WIDTH, value.toString())
+            val readBack = SystemProperties.get(SYS_PROP_GESTURE_AREA_WIDTH, "0")
+            if (readBack != value.toString()) {
+                setFloat(context, KEY_GESTURE_AREA_WIDTH_FALLBACK, value)
+            } else {
+                setFloat(context, KEY_GESTURE_AREA_WIDTH_FALLBACK, value)
+            }
+        } catch (e: Exception) {
+            setFloat(context, KEY_GESTURE_AREA_WIDTH_FALLBACK, value)
+        }
+    }
+
+    fun getGestureAreaWidth(context: Context, defaultValue: Float = 20f): Float {
+        return try {
+            val prop = SystemProperties.get(SYS_PROP_GESTURE_AREA_WIDTH, defaultValue.toString())
+            prop.toFloatOrNull() ?: getFloat(context, KEY_GESTURE_AREA_WIDTH_FALLBACK, defaultValue)
+        } catch (e: Exception) {
+            getFloat(context, KEY_GESTURE_AREA_WIDTH_FALLBACK, defaultValue)
         }
     }
 }

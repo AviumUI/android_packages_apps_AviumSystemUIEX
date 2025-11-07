@@ -39,4 +39,8 @@
     
     <string name="launcher_gesture_title">向上悬停挂起应用</string>
     <string name="launcher_gesture_summary">启用向上悬停手势以挂起当前应用程序</string>
+    
+    <string name="gesture_area_width_title">手势宽度</string>
+    <string name="gesture_area_height_title">手势高度</string>
+    <string name="gesture_area_warning">注意手势触发区域越大可能会影响原有触摸手势</string>
 </resources>

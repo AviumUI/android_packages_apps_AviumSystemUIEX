@@ -48,12 +48,17 @@ fun HomeScreen(
         )
     }
 
+    var gestureAreaWidth by remember { mutableStateOf(20f) }
+    var gestureAreaHeight by remember { mutableStateOf(20f) }
+
 
     LaunchedEffect(Unit) {
         doubleTapExit = PreferenceHelper.getBoolean(context, PreferenceHelper.KEY_POPUP_DOUBLE_TAP_EXIT, false)
         notifPortrait = PreferenceHelper.getBoolean(context, PreferenceHelper.KEY_POPUP_NOTIFICATION_PORTRAIT, true)
         notifLandscape = PreferenceHelper.getBoolean(context, PreferenceHelper.KEY_POPUP_NOTIFICATION_LANDSCAPE, true)
         useBubbleMode = PreferenceHelper.getBoolean(context, PreferenceHelper.KEY_APP_LAUNCH_MODE, true)
+        gestureAreaWidth = PreferenceHelper.getGestureAreaWidth(context, 20f)
+        gestureAreaHeight = PreferenceHelper.getGestureAreaHeight(context, 20f)
     }
 
     Scaffold(
@@ -163,6 +168,35 @@ fun HomeScreen(
                 }
             )
 
+            Divider(modifier = Modifier.padding(vertical = 16.dp))
+
+            Text(
+                text = stringResource(R.string.gesture_area_warning),
+                fontSize = 12.sp,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+            )
+
+            SettingSliderRow(
+                title = stringResource(R.string.gesture_area_width_title),
+                value = gestureAreaWidth,
+                valueRange = 20f..100f,
+                onValueChange = { value ->
+                    gestureAreaWidth = value
+                    PreferenceHelper.setGestureAreaWidth(context, value)
+                }
+            )
+
+            SettingSliderRow(
+                title = stringResource(R.string.gesture_area_height_title),
+                value = gestureAreaHeight,
+                valueRange = 20f..100f,
+                onValueChange = { value ->
+                    gestureAreaHeight = value
+                    PreferenceHelper.setGestureAreaHeight(context, value)
+                }
+            )
+
             /* 
             SettingSwitchRow(
                 title = stringResource(R.string.popup_double_tap_exit_title),
@@ -233,6 +267,46 @@ private fun SettingSwitchRow(
         Switch(
             checked = checked,
             onCheckedChange = onCheckedChange
+        )
+    }
+}
+
+@Composable
+private fun SettingSliderRow(
+    title: String,
+    value: Float,
+    valueRange: ClosedFloatingPointRange<Float>,
+    onValueChange: (Float) -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .padding(horizontal = 12.dp, vertical = 12.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = title,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium
+            )
+            Text(
+                text = value.toInt().toString(),
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+            )
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Slider(
+            value = value,
+            onValueChange = onValueChange,
+            valueRange = valueRange,
+            steps = 80
         )
     }
 }

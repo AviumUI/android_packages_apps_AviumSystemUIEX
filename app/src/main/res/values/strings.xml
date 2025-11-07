@@ -43,4 +43,8 @@
     <string name="launcher_gesture_title">Hover Up to Suspend App</string>
     <string name="launcher_gesture_summary">Enable hovering up gesture to suspend the current application</string>
 
+    <string name="gesture_area_width_title">Gesture Width</string>
+    <string name="gesture_area_height_title">Gesture Height</string>
+    <string name="gesture_area_warning">Larger gesture trigger area may affect existing touch gestures</string>
+
 </resources>
