@@ -17,6 +17,9 @@ object PreferenceHelper {
     const val SYS_PROP_POPUP_GESTURE = "persist.avium.popup_gesture"
     const val KEY_POPUP_GESTURE_FALLBACK = "pop_up_view_gesture_fallback"
 
+    const val SYS_PROP_LAUNCHER_GESTURE = "persist.avium.launchergesture"
+    const val KEY_LAUNCHER_GESTURE_FALLBACK = "launcher_gesture_fallback"
+
     const val KEY_TRIGGER_WIDTH = "trigger_width"
     const val KEY_TRIGGER_HEIGHT = "trigger_height"
     const val KEY_SWIPE_TOLERANCE = "swipe_tolerance"
@@ -76,6 +79,34 @@ object PreferenceHelper {
             }
         } catch (e: Exception) {
             getBoolean(context, KEY_POPUP_GESTURE_FALLBACK, defaultValue)
+        }
+    }
+
+    fun setLauncherGestureEnabled(context: Context, enabled: Boolean) {
+        val value = if (enabled) "1" else "0"
+        try {
+            SystemProperties.set(SYS_PROP_LAUNCHER_GESTURE, value)
+            val readBack = SystemProperties.get(SYS_PROP_LAUNCHER_GESTURE, if (enabled) "0" else "1")
+            if (readBack != value) {
+                setBoolean(context, KEY_LAUNCHER_GESTURE_FALLBACK, enabled)
+            } else {
+                setBoolean(context, KEY_LAUNCHER_GESTURE_FALLBACK, enabled)
+            }
+        } catch (e: Exception) {
+            setBoolean(context, KEY_LAUNCHER_GESTURE_FALLBACK, enabled)
+        }
+    }
+
+    fun isLauncherGestureEnabled(context: Context, defaultValue: Boolean = false): Boolean {
+        return try {
+            val prop = SystemProperties.get(SYS_PROP_LAUNCHER_GESTURE, if (defaultValue) "1" else "0")
+            when (prop) {
+                "1", "true", "TRUE" -> true
+                "0", "false", "FALSE" -> false
+                else -> getBoolean(context, KEY_LAUNCHER_GESTURE_FALLBACK, defaultValue)
+            }
+        } catch (e: Exception) {
+            getBoolean(context, KEY_LAUNCHER_GESTURE_FALLBACK, defaultValue)
         }
     }
 }

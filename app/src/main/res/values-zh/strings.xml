@@ -36,4 +36,7 @@
     <string name="app_launch_mode_lightweight">轻量小窗(beta)</string>
     
     <string name="popupview_summary">在通过特定手势启用轻量小窗</string>
+    
+    <string name="launcher_gesture_title">向上悬停挂起应用</string>
+    <string name="launcher_gesture_summary">启用向上悬停手势以挂起当前应用程序</string>
 </resources>

@@ -42,6 +42,12 @@ fun HomeScreen(
         )
     }
 
+    val launcherGestureEnabled = remember {
+        mutableStateOf(
+            PreferenceHelper.isLauncherGestureEnabled(context, false)
+        )
+    }
+
 
     LaunchedEffect(Unit) {
         doubleTapExit = PreferenceHelper.getBoolean(context, PreferenceHelper.KEY_POPUP_DOUBLE_TAP_EXIT, false)
@@ -134,6 +140,16 @@ fun HomeScreen(
                 onCheckedChange = {
                     popupGestureEnabled.value = it
                     PreferenceHelper.setPopupGestureEnabled(context, it)
+                }
+            )
+
+            SettingSwitchRow(
+                title = stringResource(R.string.launcher_gesture_title),
+                summary = stringResource(R.string.launcher_gesture_summary),
+                checked = launcherGestureEnabled.value,
+                onCheckedChange = {
+                    launcherGestureEnabled.value = it
+                    PreferenceHelper.setLauncherGestureEnabled(context, it)
                 }
             )
 

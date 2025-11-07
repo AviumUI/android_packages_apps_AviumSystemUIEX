@@ -40,4 +40,7 @@
 
     <string name="popupview_summary">Open apps in a floating pop-up window for multitasking</string>
 
+    <string name="launcher_gesture_title">Hover Up to Suspend App</string>
+    <string name="launcher_gesture_summary">Enable hovering up gesture to suspend the current application</string>
+
 </resources>
