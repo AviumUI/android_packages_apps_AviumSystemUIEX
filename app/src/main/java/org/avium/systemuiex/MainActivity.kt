@@ -21,6 +21,7 @@
 
 package org.avium.systemuiex
 
+import android.content.ComponentName
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -37,9 +38,29 @@ class MainActivity : ComponentActivity() {
                 HomeScreen(
                     onOpenAppSelection = {
                         startActivity(Intent(this, AppSelectionActivity::class.java))
+                    },
+                    onOpenGlobalSidebar = {
+                        openMiFreeform()
                     }
                 )
             }
+        }
+    }
+
+    private fun openMiFreeform() {
+        val intent = Intent().apply {
+            setComponent(
+                ComponentName(
+                    "com.sunshine.freeform",
+                    "com.sunshine.freeform.ui.splash.SplashActivity"
+                )
+            )
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        try {
+            startActivity(intent)
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 }

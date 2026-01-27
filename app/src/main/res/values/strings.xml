@@ -47,4 +47,7 @@
     <string name="gesture_area_height_title">Gesture Height</string>
     <string name="gesture_area_warning">Larger gesture trigger area may affect existing touch gestures</string>
 
+    <string name="global_sidebar_title">Global Sidebar Management</string>
+    <string name="global_sidebar_summary">Manage Freeform sidebar settings</string>
+
 </resources>
