@@ -55,15 +55,22 @@ object AppLauncher {
     }
 
     private fun launchAppNormally(context: Context, packageName: String) {
-        val intent = context.packageManager.getLaunchIntentForPackage(packageName)
-        if (intent != null) {
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-
-            val miniWindowOptions = ActivityOptions.makeBasic().apply {
-                setLaunchWindowingMode(102)
+        val launchIntent = context.packageManager.getLaunchIntentForPackage(packageName)
+        if (launchIntent != null) {
+            val componentName = launchIntent.component
+            if (componentName != null) {
+                val activityName = componentName.className
+                val intent = Intent("com.sunshine.freeform.start_freeform").apply {
+                    setPackage("com.sunshine.freeform")
+                    putExtra("packageName", packageName)
+                    putExtra("activityName", activityName)
+                    putExtra("userId", 0)
+                    putExtra(Intent.EXTRA_INTENT, launchIntent)
+                }
+                context.sendBroadcast(intent)
+            } else {
+                showLaunchFailToast(context)
             }
-
-            context.startActivity(intent, miniWindowOptions.toBundle())
         } else {
             showLaunchFailToast(context)
         }
