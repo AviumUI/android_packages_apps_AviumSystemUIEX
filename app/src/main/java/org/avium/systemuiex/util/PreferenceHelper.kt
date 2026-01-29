@@ -46,6 +46,9 @@ object PreferenceHelper {
     const val KEY_GESTURE_AREA_HEIGHT_FALLBACK = "gesture_area_height_fallback"
     const val KEY_GESTURE_AREA_WIDTH_FALLBACK = "gesture_area_width_fallback"
 
+    const val SYS_PROP_POPUP_VIEW_MODE = "persist.avium.popup_view"
+    const val KEY_POPUP_VIEW_MODE_FALLBACK = "popup_view_mode_fallback"
+
     const val KEY_TRIGGER_WIDTH = "trigger_width"
     const val KEY_TRIGGER_HEIGHT = "trigger_height"
     const val KEY_SWIPE_TOLERANCE = "swipe_tolerance"
@@ -179,6 +182,34 @@ object PreferenceHelper {
             prop.toFloatOrNull() ?: getFloat(context, KEY_GESTURE_AREA_WIDTH_FALLBACK, defaultValue)
         } catch (e: Exception) {
             getFloat(context, KEY_GESTURE_AREA_WIDTH_FALLBACK, defaultValue)
+        }
+    }
+
+    fun setPopupViewMode(context: Context, useBubbleMode: Boolean) {
+        val value = if (useBubbleMode) "bubble" else "free window"
+        try {
+            SystemProperties.set(SYS_PROP_POPUP_VIEW_MODE, value)
+            val readBack = SystemProperties.get(SYS_PROP_POPUP_VIEW_MODE, "")
+            if (readBack != value) {
+                setBoolean(context, KEY_POPUP_VIEW_MODE_FALLBACK, useBubbleMode)
+            } else {
+                setBoolean(context, KEY_POPUP_VIEW_MODE_FALLBACK, useBubbleMode)
+            }
+        } catch (e: Exception) {
+            setBoolean(context, KEY_POPUP_VIEW_MODE_FALLBACK, useBubbleMode)
+        }
+    }
+
+    fun getPopupViewMode(context: Context, defaultValue: Boolean = true): Boolean {
+        return try {
+            val prop = SystemProperties.get(SYS_PROP_POPUP_VIEW_MODE, if (defaultValue) "bubble" else "free window")
+            when (prop) {
+                "bubble" -> true
+                "free window" -> false
+                else -> getBoolean(context, KEY_POPUP_VIEW_MODE_FALLBACK, defaultValue)
+            }
+        } catch (e: Exception) {
+            getBoolean(context, KEY_POPUP_VIEW_MODE_FALLBACK, defaultValue)
         }
     }
 }

@@ -42,7 +42,7 @@ object AppLauncher {
     */
 
     fun launchApp(context: Context, packageName: String) {
-        val useBubbleMode = PreferenceHelper.getBoolean(context, PreferenceHelper.KEY_APP_LAUNCH_MODE, true)
+        val useBubbleMode = PreferenceHelper.getPopupViewMode(context, true)
         
         if (useBubbleMode) {
             val intent = Intent("org.avium.LAUNCH_BUBBLE")

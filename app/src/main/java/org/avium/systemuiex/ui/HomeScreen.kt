@@ -78,7 +78,7 @@ fun HomeScreen(
         doubleTapExit = PreferenceHelper.getBoolean(context, PreferenceHelper.KEY_POPUP_DOUBLE_TAP_EXIT, false)
         notifPortrait = PreferenceHelper.getBoolean(context, PreferenceHelper.KEY_POPUP_NOTIFICATION_PORTRAIT, true)
         notifLandscape = PreferenceHelper.getBoolean(context, PreferenceHelper.KEY_POPUP_NOTIFICATION_LANDSCAPE, true)
-        useBubbleMode = PreferenceHelper.getBoolean(context, PreferenceHelper.KEY_APP_LAUNCH_MODE, true)
+        useBubbleMode = PreferenceHelper.getPopupViewMode(context, true)
         gestureAreaWidth = PreferenceHelper.getGestureAreaWidth(context, 20f)
         gestureAreaHeight = PreferenceHelper.getGestureAreaHeight(context, 20f)
     }
@@ -219,6 +219,7 @@ fun HomeScreen(
                 onCheckedChange = { checked ->
                     useBubbleMode = checked
                     PreferenceHelper.setBoolean(context, PreferenceHelper.KEY_APP_LAUNCH_MODE, checked)
+                    PreferenceHelper.setPopupViewMode(context, checked)
                 }
             )
 
