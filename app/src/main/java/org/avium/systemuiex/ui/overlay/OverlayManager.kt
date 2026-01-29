@@ -82,9 +82,9 @@ object OverlayManager {
         val moreAppsButton = ImageView(context).apply {
             setImageResource(R.drawable.ic_more_app_list)
             setOnClickListener {
-                val intent = Intent(context, org.avium.systemuiex.ui.selection.AppSelectionActivity::class.java)
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                context.startActivity(intent)
+                val intent = Intent("com.sunshine.freeform.SHOW_ALL_APPS")
+                intent.addFlags(Intent.FLAG_RECEIVER_INCLUDE_BACKGROUND)
+                context.sendBroadcast(intent)
                 hide()
             }
         }
