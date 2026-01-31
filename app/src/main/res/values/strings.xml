@@ -50,4 +50,7 @@
     <string name="global_sidebar_title">Global Sidebar Management</string>
     <string name="global_sidebar_summary">Manage Freeform sidebar settings</string>
 
+    <string name="popup_view_notifs_title">Open Notifications in Popup(beta)</string>
+    <string name="popup_view_notifs_summary">Use popup window to open notification apps</string>
+
 </resources>

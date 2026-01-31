@@ -49,6 +49,9 @@ object PreferenceHelper {
     const val SYS_PROP_POPUP_VIEW_MODE = "persist.avium.popup_view"
     const val KEY_POPUP_VIEW_MODE_FALLBACK = "popup_view_mode_fallback"
 
+    const val SYS_PROP_POPUP_VIEW_NOTIFS = "persist.avium.popup_view_notifs"
+    const val KEY_POPUP_VIEW_NOTIFS_FALLBACK = "popup_view_notifs_fallback"
+
     const val KEY_TRIGGER_WIDTH = "trigger_width"
     const val KEY_TRIGGER_HEIGHT = "trigger_height"
     const val KEY_SWIPE_TOLERANCE = "swipe_tolerance"
@@ -210,6 +213,34 @@ object PreferenceHelper {
             }
         } catch (e: Exception) {
             getBoolean(context, KEY_POPUP_VIEW_MODE_FALLBACK, defaultValue)
+        }
+    }
+
+    fun setPopupViewNotifsEnabled(context: Context, enabled: Boolean) {
+        val value = if (enabled) "1" else "0"
+        try {
+            SystemProperties.set(SYS_PROP_POPUP_VIEW_NOTIFS, value)
+            val readBack = SystemProperties.get(SYS_PROP_POPUP_VIEW_NOTIFS, if (enabled) "0" else "1")
+            if (readBack != value) {
+                setBoolean(context, KEY_POPUP_VIEW_NOTIFS_FALLBACK, enabled)
+            } else {
+                setBoolean(context, KEY_POPUP_VIEW_NOTIFS_FALLBACK, enabled)
+            }
+        } catch (e: Exception) {
+            setBoolean(context, KEY_POPUP_VIEW_NOTIFS_FALLBACK, enabled)
+        }
+    }
+
+    fun isPopupViewNotifsEnabled(context: Context, defaultValue: Boolean = false): Boolean {
+        return try {
+            val prop = SystemProperties.get(SYS_PROP_POPUP_VIEW_NOTIFS, if (defaultValue) "1" else "0")
+            when (prop) {
+                "1", "true", "TRUE" -> true
+                "0", "false", "FALSE" -> false
+                else -> getBoolean(context, KEY_POPUP_VIEW_NOTIFS_FALLBACK, defaultValue)
+            }
+        } catch (e: Exception) {
+            getBoolean(context, KEY_POPUP_VIEW_NOTIFS_FALLBACK, defaultValue)
         }
     }
 }

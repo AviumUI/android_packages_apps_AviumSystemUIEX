@@ -46,4 +46,8 @@
 
     <string name="global_sidebar_title">全局侧边栏</string>
     <string name="global_sidebar_summary">点击管理侧边栏设置</string>
+
+    <string name="popup_view_notifs_title">通知打开(beta)</string>
+    <string name="popup_view_notifs_summary">使用轻量小窗打开通知应用</string>
+
 </resources>
