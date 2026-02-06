@@ -53,4 +53,18 @@
     <string name="popup_view_notifs_title">Open Notifications in Popup(beta)</string>
     <string name="popup_view_notifs_summary">Use popup window to open notification apps</string>
 
+<<<<<<< PATCH SET (33789c0e0c8847977b89d356151c734a63ba0209 AviumSystemUIEX: Use ListPreference for launch mode)
+    <string-array name="app_launch_mode_entries">
+        <item>@string/app_launch_mode_bubble</item>
+        <item>@string/app_launch_mode_lightweight</item>
+    </string-array>
+
+    <string-array name="app_launch_mode_values">
+        <item>bubble</item>
+        <item>free_window</item>
+    </string-array>
+
 </resources>
+=======
+</resources>
+>>>>>>> BASE      (3d4d283e2b70a8e0ef417e74a6d94f76316aeb1c AviumSystemUIEX: Migrate settings UI to SettingsLib preferen)

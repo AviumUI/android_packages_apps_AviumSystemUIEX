@@ -50,10 +50,13 @@
             android:summary="@string/launcher_gesture_summary"
             android:defaultValue="false" />
 
-        <SwitchPreferenceCompat
-            android:key="app_launch_mode"
+        <ListPreference
+            android:key="app_launch_mode_pref"
             android:title="@string/app_launch_mode_title"
-            android:defaultValue="true" />
+            android:summary="%s"
+            android:entries="@array/app_launch_mode_entries"
+            android:entryValues="@array/app_launch_mode_values"
+            android:defaultValue="bubble" />
 
         <SwitchPreferenceCompat
             android:key="popup_view_notifs"
