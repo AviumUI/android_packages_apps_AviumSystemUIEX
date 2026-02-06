@@ -53,4 +53,14 @@
     <string name="popup_view_notifs_title">Open Notifications in Popup(beta)</string>
     <string name="popup_view_notifs_summary">Use popup window to open notification apps</string>
 
+    <string-array name="app_launch_mode_entries">
+        <item>@string/app_launch_mode_bubble</item>
+        <item>@string/app_launch_mode_lightweight</item>
+    </string-array>
+
+    <string-array name="app_launch_mode_values">
+        <item>bubble</item>
+        <item>free_window</item>
+    </string-array>
+
 </resources>

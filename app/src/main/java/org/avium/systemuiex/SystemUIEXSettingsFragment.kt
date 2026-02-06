@@ -20,6 +20,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.SwitchPreferenceCompat
 import com.android.settingslib.widget.SettingsBasePreferenceFragment
@@ -69,10 +70,7 @@ class SystemUIEXSettingsFragment : SettingsBasePreferenceFragment() {
             PreferenceHelper.setLauncherGestureEnabled(context, it)
         }
 
-        bindSwitch(KEY_APP_LAUNCH_MODE, PreferenceHelper.getPopupViewMode(context, true)) { enabled ->
-            PreferenceHelper.setBoolean(context, PreferenceHelper.KEY_APP_LAUNCH_MODE, enabled)
-            PreferenceHelper.setPopupViewMode(context, enabled)
-        }
+        bindLaunchModePreference()
 
         bindSwitch(KEY_POPUP_VIEW_NOTIFS, PreferenceHelper.isPopupViewNotifsEnabled(context, false)) {
             PreferenceHelper.setPopupViewNotifsEnabled(context, it)
@@ -84,16 +82,9 @@ class SystemUIEXSettingsFragment : SettingsBasePreferenceFragment() {
         pref.isPersistent = false
         pref.isChecked = initialValue
 
-        if (key == KEY_APP_LAUNCH_MODE) {
-            updateLaunchModeSummary(pref, initialValue)
-        }
-
         pref.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
             val enabled = newValue as Boolean
             onChange(enabled)
-            if (key == KEY_APP_LAUNCH_MODE) {
-                updateLaunchModeSummary(pref, enabled)
-            }
             true
         }
     }
@@ -121,14 +112,20 @@ class SystemUIEXSettingsFragment : SettingsBasePreferenceFragment() {
         }
     }
 
-    private fun updateLaunchModeSummary(pref: SwitchPreferenceCompat, useBubbleMode: Boolean) {
-        pref.summary = getString(
-            if (useBubbleMode) {
-                R.string.app_launch_mode_bubble
-            } else {
-                R.string.app_launch_mode_lightweight
-            }
-        )
+    private fun bindLaunchModePreference() {
+        val pref = findPreference<ListPreference>(KEY_APP_LAUNCH_MODE_PREF) ?: return
+        pref.isPersistent = false
+
+        val useBubbleMode = PreferenceHelper.getPopupViewMode(requireContext(), true)
+        pref.value = if (useBubbleMode) VALUE_LAUNCH_MODE_BUBBLE else VALUE_LAUNCH_MODE_FREE_WINDOW
+
+        pref.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+            val selectedValue = newValue as String
+            val useBubble = selectedValue == VALUE_LAUNCH_MODE_BUBBLE
+            PreferenceHelper.setBoolean(requireContext(), PreferenceHelper.KEY_APP_LAUNCH_MODE, useBubble)
+            PreferenceHelper.setPopupViewMode(requireContext(), useBubble)
+            true
+        }
     }
 
     private fun openMiFreeform() {
@@ -151,9 +148,11 @@ class SystemUIEXSettingsFragment : SettingsBasePreferenceFragment() {
         private const val KEY_GLOBAL_SIDEBAR = "global_sidebar"
         private const val KEY_POPUP_GESTURE = "popup_gesture"
         private const val KEY_LAUNCHER_GESTURE = "launcher_gesture"
-        private const val KEY_APP_LAUNCH_MODE = "app_launch_mode"
+        private const val KEY_APP_LAUNCH_MODE_PREF = "app_launch_mode_pref"
         private const val KEY_POPUP_VIEW_NOTIFS = "popup_view_notifs"
         private const val KEY_GESTURE_AREA_WIDTH = "gesture_area_width"
         private const val KEY_GESTURE_AREA_HEIGHT = "gesture_area_height"
+        private const val VALUE_LAUNCH_MODE_BUBBLE = "bubble"
+        private const val VALUE_LAUNCH_MODE_FREE_WINDOW = "free_window"
     }
 }

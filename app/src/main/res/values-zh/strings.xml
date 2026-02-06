@@ -50,4 +50,14 @@
     <string name="popup_view_notifs_title">通知打开(beta)</string>
     <string name="popup_view_notifs_summary">使用轻量小窗打开通知应用</string>
 
+    <string-array name="app_launch_mode_entries">
+        <item>@string/app_launch_mode_bubble</item>
+        <item>@string/app_launch_mode_lightweight</item>
+    </string-array>
+
+    <string-array name="app_launch_mode_values">
+        <item>bubble</item>
+        <item>free_window</item>
+    </string-array>
+
 </resources>
