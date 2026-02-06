@@ -21,46 +21,20 @@
 
 package org.avium.systemuiex
 
-import android.content.ComponentName
-import android.content.Intent
 import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import org.avium.systemuiex.ui.HomeScreen
-import org.avium.systemuiex.ui.selection.AppSelectionActivity
-import org.avium.systemuiex.ui.theme.SystemUIEXTheme
+import com.android.settingslib.collapsingtoolbar.CollapsingToolbarBaseActivity
 
-class MainActivity : ComponentActivity() {
+class MainActivity : CollapsingToolbarBaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent {
-            SystemUIEXTheme {
-                HomeScreen(
-                    onOpenAppSelection = {
-                        startActivity(Intent(this, AppSelectionActivity::class.java))
-                    },
-                    onOpenGlobalSidebar = {
-                        openMiFreeform()
-                    }
+        if (savedInstanceState == null) {
+            supportFragmentManager
+                .beginTransaction()
+                .replace(
+                    com.android.settingslib.collapsingtoolbar.R.id.content_frame,
+                    SystemUIEXSettingsFragment()
                 )
-            }
-        }
-    }
-
-    private fun openMiFreeform() {
-        val intent = Intent().apply {
-            setComponent(
-                ComponentName(
-                    "com.sunshine.freeform",
-                    "com.sunshine.freeform.ui.splash.SplashActivity"
-                )
-            )
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        }
-        try {
-            startActivity(intent)
-        } catch (e: Exception) {
-            e.printStackTrace()
+                .commit()
         }
     }
 }

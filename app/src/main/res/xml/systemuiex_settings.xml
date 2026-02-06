@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2025 The AviumUI Project
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:settings="http://schemas.android.com/apk/res-auto"
+    android:title="@string/app_name">
+
+    <com.android.settingslib.widget.LayoutPreference
+        android:key="header_view"
+        android:layout="@layout/settings_header"
+        android:selectable="false" />
+
+    <PreferenceCategory android:title="@string/app_settings_title">
+
+        <Preference
+            android:key="manage_apps"
+            android:title="@string/manage_label_title"
+            android:summary="@string/manage_label_summary" />
+
+        <Preference
+            android:key="global_sidebar"
+            android:title="@string/global_sidebar_title"
+            android:summary="@string/global_sidebar_summary" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/gesture_settings">
+
+        <SwitchPreferenceCompat
+            android:key="popup_gesture"
+            android:title="@string/popup_gesture"
+            android:summary="@string/popup_gesture_summary"
+            android:defaultValue="false" />
+
+        <SwitchPreferenceCompat
+            android:key="launcher_gesture"
+            android:title="@string/launcher_gesture_title"
+            android:summary="@string/launcher_gesture_summary"
+            android:defaultValue="false" />
+
+        <SwitchPreferenceCompat
+            android:key="app_launch_mode"
+            android:title="@string/app_launch_mode_title"
+            android:defaultValue="true" />
+
+        <SwitchPreferenceCompat
+            android:key="popup_view_notifs"
+            android:title="@string/popup_view_notifs_title"
+            android:summary="@string/popup_view_notifs_summary"
+            android:defaultValue="false" />
+
+        <com.android.settingslib.widget.FooterPreference
+            android:key="gesture_area_warning"
+            android:title="@string/gesture_area_warning" />
+
+        <com.android.settingslib.widget.SliderPreference
+            android:key="gesture_area_width"
+            android:title="@string/gesture_area_width_title"
+            android:min="20"
+            android:max="100"
+            settings:showSeekBarValue="true" />
+
+        <com.android.settingslib.widget.SliderPreference
+            android:key="gesture_area_height"
+            android:title="@string/gesture_area_height_title"
+            android:min="20"
+            android:max="100"
+            settings:showSeekBarValue="true" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>
