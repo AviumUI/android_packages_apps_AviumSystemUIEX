@@ -27,7 +27,7 @@ import android.os.SystemProperties
 
 object PreferenceHelper {
 
-    private const val PREFS_NAME = "SystemUIEX_Prefs"
+    const val PREFS_NAME = "SystemUIEX_Prefs"
     private const val KEY_SELECTED_APPS = "selected_apps"
 
     const val KEY_POPUP_DOUBLE_TAP_EXIT = "pop_up_view_double_tap_exit"
