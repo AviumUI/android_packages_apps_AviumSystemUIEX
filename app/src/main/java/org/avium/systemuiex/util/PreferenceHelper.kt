@@ -22,13 +22,15 @@
 package org.avium.systemuiex.util
 
 import android.content.Context
+import android.content.Intent
 import androidx.core.content.edit
 import android.os.SystemProperties
 
 object PreferenceHelper {
 
-    const val PREFS_NAME = "SystemUIEX_Prefs"
+    private const val PREFS_NAME = "SystemUIEX_Prefs"
     private const val KEY_SELECTED_APPS = "selected_apps"
+    private const val ACTION_UPDATE_GESTURE_SETTINGS = "org.avium.UPDATE_GESTURE_SETTINGS"
 
     const val KEY_POPUP_DOUBLE_TAP_EXIT = "pop_up_view_double_tap_exit"
     const val KEY_POPUP_NOTIFICATION_PORTRAIT = "pop_up_view_notification_portrait"
@@ -154,6 +156,8 @@ object PreferenceHelper {
         } catch (e: Exception) {
             setFloat(context, KEY_GESTURE_AREA_HEIGHT_FALLBACK, value)
         }
+        val intent = Intent(ACTION_UPDATE_GESTURE_SETTINGS)
+        context.sendBroadcast(intent)
     }
 
     fun getGestureAreaHeight(context: Context, defaultValue: Float = 20f): Float {
@@ -177,6 +181,8 @@ object PreferenceHelper {
         } catch (e: Exception) {
             setFloat(context, KEY_GESTURE_AREA_WIDTH_FALLBACK, value)
         }
+        val intent = Intent(ACTION_UPDATE_GESTURE_SETTINGS)
+        context.sendBroadcast(intent)
     }
 
     fun getGestureAreaWidth(context: Context, defaultValue: Float = 20f): Float {
