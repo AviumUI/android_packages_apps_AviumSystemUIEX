@@ -25,11 +25,14 @@ package org.avium.systemuiex.ui.overlay
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.os.Handler
+import android.os.Looper
 import android.view.WindowManager
 import android.widget.ImageView
 import android.util.Log
 import org.avium.systemuiex.R
 import org.avium.systemuiex.util.PreferenceHelper
+import java.util.concurrent.ConcurrentLinkedQueue
 
 @SuppressLint("StaticFieldLeak")
 object OverlayManager {
@@ -39,8 +42,12 @@ object OverlayManager {
     private var overlayView: BaseAppCircleViewGroup? = null
     @SuppressLint("StaticFieldLeak")
     private var context: Context? = null
+    
+    private val mainHandler = Handler(Looper.getMainLooper())
+    private val touchCoordinatesQueue = ConcurrentLinkedQueue<Triple<Float, Float, Boolean>>()
+    private var isGestureActive = false
 
-    fun show(context: Context, isLeft: Boolean) {
+    fun show(context: Context, isLeft: Boolean, initialTouchX: Float = -1f, initialTouchY: Float = -1f) {
 
         this.context = context
         
@@ -68,10 +75,6 @@ object OverlayManager {
                 val icon = appInfo.loadIcon(pm)
                 val imageView = ImageView(context).apply {
                     setImageDrawable(icon)
-                    setOnClickListener { _ ->
-                        org.avium.systemuiex.util.AppLauncher.launchApp(context, packageName)
-                        hide()
-                    }
                 }
                 overlayView?.addView(imageView)
             } catch (e: Exception) {
@@ -81,20 +84,40 @@ object OverlayManager {
 
         val moreAppsButton = ImageView(context).apply {
             setImageResource(R.drawable.ic_more_app_list)
-            setOnClickListener {
-                val intent = Intent("com.sunshine.freeform.SHOW_ALL_APPS")
-                intent.addFlags(Intent.FLAG_RECEIVER_INCLUDE_BACKGROUND)
-                context.sendBroadcast(intent)
-                hide()
-            }
         }
         overlayView?.addView(moreAppsButton)
 
         overlayView?.let { 
-            it.setOnClickListener { hide() }
+            it.setOnIconLaunchListener { index ->
+                val apps = PreferenceHelper.getSelectedApps(context).take(org.avium.systemuiex.util.Config.MAX_ICONS - 1)
+                if (index < apps.size) {
+                    org.avium.systemuiex.util.AppLauncher.launchApp(context, apps[index])
+                } else {
+                    val intent = Intent("com.sunshine.freeform.SHOW_ALL_APPS")
+                    intent.addFlags(Intent.FLAG_RECEIVER_INCLUDE_BACKGROUND)
+                    context.sendBroadcast(intent)
+                }
+                hide()
+            }
+            
+            it.setOnDismissListener {
+                hide()
+            }
+            
+            if (initialTouchX >= 0 && initialTouchY >= 0) {
+                it.setInitialTouchPoint(initialTouchX, initialTouchY)
+            }
+            
             try {
                 val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
                 windowManager.addView(it, BaseAppCircleViewGroup.groupLayoutParams)
+                
+                while (touchCoordinatesQueue.isNotEmpty()) {
+                    val touch = touchCoordinatesQueue.poll()
+                    touch?.let { (x, y, isUp) ->
+                        it.dispatchTouchCoordinates(x, y, isUp)
+                    }
+                }
             } catch (e: Exception) {
                 overlayView = null
             }
@@ -111,7 +134,28 @@ object OverlayManager {
                 //do nothing
             } finally {
                 overlayView = null
+                isGestureActive = false
+                touchCoordinatesQueue.clear()
             }
+        }
+    }
+    
+    fun onTouchCoordinates(x: Float, y: Float, isUp: Boolean) {
+        if (!isGestureActive && !isUp) {
+            isGestureActive = true
+        }
+        
+        if (overlayView == null) {
+            touchCoordinatesQueue.add(Triple(x, y, isUp))
+        } else {
+            mainHandler.post {
+                overlayView?.dispatchTouchCoordinates(x, y, isUp)
+            }
+        }
+        
+        if (isUp) {
+            isGestureActive = false
+            touchCoordinatesQueue.clear()
         }
     }
 }
