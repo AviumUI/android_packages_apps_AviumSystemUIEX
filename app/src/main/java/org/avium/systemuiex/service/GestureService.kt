@@ -41,10 +41,12 @@ class GestureService : Service() {
     private val CHANNEL_ID = "GestureServiceChannel"
 
     companion object {
-        fun startViaPendingIntent(context: Context, isLeft: Boolean) {
+        fun startViaPendingIntent(context: Context, isLeft: Boolean, touchX: Float = -1f, touchY: Float = -1f) {
 
             val serviceIntent = Intent(context, GestureService::class.java).apply {
                 putExtra("isLeft", isLeft)
+                putExtra("touchX", touchX)
+                putExtra("touchY", touchY)
             }
 
             val pendingIntent =
@@ -95,10 +97,12 @@ class GestureService : Service() {
         }
 
         val isLeft = intent.getBooleanExtra("isLeft", true)
+        val touchX = intent.getFloatExtra("touchX", -1f)
+        val touchY = intent.getFloatExtra("touchY", -1f)
 
         val notification = createNotification()
         startForeground(NOTIFICATION_ID, notification)
-        OverlayManager.show(this, isLeft)
+        OverlayManager.show(this, isLeft, touchX, touchY)
         return START_NOT_STICKY
     }
 

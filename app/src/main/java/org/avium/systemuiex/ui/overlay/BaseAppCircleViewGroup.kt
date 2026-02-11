@@ -26,19 +26,21 @@ import android.animation.ObjectAnimator
 import android.content.Context
 import android.graphics.Color
 import android.graphics.PixelFormat
-import android.os.Build
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowInsets
 import android.view.WindowManager
 import android.view.animation.DecelerateInterpolator
+import android.widget.ImageView
 import org.avium.systemuiex.util.Config.CIRCLE_CENTER_Y_LAND
 import org.avium.systemuiex.util.Config.CIRCLE_CENTER_Y_PORT
 import org.avium.systemuiex.util.Config.CIRCLE_OFFSET_X_LAND
 import org.avium.systemuiex.util.Config.CIRCLE_OFFSET_X_PORT
 import org.avium.systemuiex.util.Config.ICON_SIZE_RATIO
 import org.avium.systemuiex.util.Config.ICON_SPACING_MULTIPLIER
-import org.avium.systemuiex.util.Config.getCircleMaxIconArray
 import org.avium.systemuiex.util.Config.getCircleRadiusRatioArray
 import kotlin.math.cos
 import kotlin.math.min
@@ -50,15 +52,45 @@ abstract class BaseAppCircleViewGroup(
 ) : ViewGroup(context) {
 
     private var hasAnimated = false
-    private val animationDuration = 200L
+    private val animationDuration = 180L
     private val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+    private val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+    
+    private var selectedChildIndex: Int = -1
+    private var lastVibratedIndex: Int = -1
+    private var isTouching: Boolean = false
+    private var hasReceivedTouch: Boolean = false
+    private var isFirstTouchUp: Boolean = true
+    
+    private var initialTouchX: Float = -1f
+    private var initialTouchY: Float = -1f
+    private var hasInitialTouchPoint: Boolean = false
+    
+    private val iconLaunchListeners = mutableListOf<(Int) -> Unit>()
+    private val dismissListeners = mutableListOf<() -> Unit>()
 
     init {
         setWillNotDraw(false)
         background = Color.BLACK.toDrawable().apply { alpha = 0 }
+        isClickable = true
+        isFocusable = true
     }
 
     abstract fun isLeft(): Boolean
+    
+    fun setOnIconLaunchListener(listener: (Int) -> Unit) {
+        iconLaunchListeners.add(listener)
+    }
+    
+    fun setOnDismissListener(listener: () -> Unit) {
+        dismissListeners.add(listener)
+    }
+    
+    fun setInitialTouchPoint(x: Float, y: Float) {
+        initialTouchX = x
+        initialTouchY = y
+        hasInitialTouchPoint = true
+    }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
@@ -147,14 +179,162 @@ abstract class BaseAppCircleViewGroup(
 
             val animatorSet = AnimatorSet()
             animatorSet.playTogether(translationXAnimator, translationYAnimator, alphaAnimator)
-            animatorSet.interpolator = DecelerateInterpolator(2.5f)
-            animatorSet.duration = animationDuration + i * 20
+            animatorSet.interpolator = DecelerateInterpolator(1.5f)
+            animatorSet.duration = animationDuration + i * 15
             animatorSet.start()
+        }
+    }
+    
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        when (event.action) {
+            MotionEvent.ACTION_DOWN -> {
+                isTouching = true
+                hasReceivedTouch = true
+                if (hasInitialTouchPoint) {
+                    updateSelectedIcon(event.x, event.y)
+                    if (selectedChildIndex < 0) {
+                        checkIconAlongPath(initialTouchX, initialTouchY, event.x, event.y)
+                    }
+                } else {
+                    updateSelectedIcon(event.x, event.y)
+                }
+                return true
+            }
+            MotionEvent.ACTION_MOVE -> {
+                if (isTouching) {
+                    updateSelectedIcon(event.x, event.y)
+                }
+                return true
+            }
+            MotionEvent.ACTION_UP -> {
+                if (isTouching) {
+                    if (selectedChildIndex >= 0 && selectedChildIndex < childCount) {
+                        iconLaunchListeners.forEach { it(selectedChildIndex) }
+                    } else if (hasReceivedTouch && !isFirstTouchUp) {
+                        dismissListeners.forEach { it() }
+                    }
+                    isFirstTouchUp = false
+                    resetTouchState()
+                }
+                return true
+            }
+            MotionEvent.ACTION_CANCEL -> {
+                if (isTouching) {
+                    resetTouchState()
+                }
+                return true
+            }
+        }
+        return super.onTouchEvent(event)
+    }
+    
+    private fun checkIconAlongPath(startX: Float, startY: Float, endX: Float, endY: Float) {
+        val steps = 5
+        for (i in 1 until steps) {
+            val ratio = i.toFloat() / steps
+            val checkX = startX + (endX - startX) * ratio
+            val checkY = startY + (endY - startY) * ratio
+            
+            for (j in 0 until childCount) {
+                val child = getChildAt(j)
+                if (checkX >= child.left && checkX <= child.right && 
+                    checkY >= child.top && checkY <= child.bottom) {
+                    selectedChildIndex = j
+                    updateIconScales()
+                    performHapticFeedback()
+                    lastVibratedIndex = j
+                    return
+                }
+            }
+        }
+    }
+    
+    private fun resetTouchState() {
+        isTouching = false
+        selectedChildIndex = -1
+        lastVibratedIndex = -1
+    }
+    
+    private fun updateSelectedIcon(x: Float, y: Float) {
+        var newSelectedIndex = -1
+        
+        for (i in 0 until childCount) {
+            val child = getChildAt(i)
+            if (x >= child.left && x <= child.right && y >= child.top && y <= child.bottom) {
+                newSelectedIndex = i
+                break
+            }
+        }
+        
+        if (newSelectedIndex != selectedChildIndex) {
+            selectedChildIndex = newSelectedIndex
+            updateIconScales()
+        }
+        
+        if (selectedChildIndex >= 0 && selectedChildIndex != lastVibratedIndex) {
+            performHapticFeedback()
+            lastVibratedIndex = selectedChildIndex
+        }
+    }
+    
+    private fun updateIconScales() {
+        for (i in 0 until childCount) {
+            val child = getChildAt(i)
+            if (i == selectedChildIndex) {
+                child.animate()
+                    .scaleX(1.15f)
+                    .scaleY(1.15f)
+                    .setDuration(100)
+                    .start()
+            } else {
+                child.animate()
+                    .scaleX(1.0f)
+                    .scaleY(1.0f)
+                    .setDuration(100)
+                    .start()
+            }
+        }
+    }
+    
+    private fun resetIconScales() {
+        for (i in 0 until childCount) {
+            val child = getChildAt(i)
+            child.animate()
+                .scaleX(1.0f)
+                .scaleY(1.0f)
+                .setDuration(100)
+                .start()
+        }
+    }
+    
+    private fun performHapticFeedback() {
+        val effect = VibrationEffect.createOneShot(10, VibrationEffect.DEFAULT_AMPLITUDE)
+        vibrator.vibrate(effect)
+    }
+    
+    fun dispatchTouchCoordinates(x: Float, y: Float, isUp: Boolean) {
+        when {
+            !isTouching && !isUp -> {
+                isTouching = true
+                hasReceivedTouch = true
+                updateSelectedIcon(x, y)
+            }
+            isTouching && !isUp -> {
+                updateSelectedIcon(x, y)
+            }
+            isUp -> {
+                if (selectedChildIndex >= 0 && selectedChildIndex < childCount) {
+                    iconLaunchListeners.forEach { it(selectedChildIndex) }
+                } else if (hasReceivedTouch && !isFirstTouchUp) {
+                    dismissListeners.forEach { it() }
+                }
+                isFirstTouchUp = false
+                resetTouchState()
+            }
         }
     }
 
     companion object {
-        @Suppress("DEPRECATION")
         val groupLayoutParams = WindowManager.LayoutParams().apply {
             type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
             format = PixelFormat.RGBA_8888
@@ -164,7 +344,9 @@ abstract class BaseAppCircleViewGroup(
                     WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
                     WindowManager.LayoutParams.FLAG_FULLSCREEN or
                     WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR or
-                    WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
+                    WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS or
+                    WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or
+                    WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED
             layoutInDisplayCutoutMode =
                 WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
             width = WindowManager.LayoutParams.MATCH_PARENT
