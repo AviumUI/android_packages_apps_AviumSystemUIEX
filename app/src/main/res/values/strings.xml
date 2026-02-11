@@ -53,6 +53,9 @@
     <string name="popup_view_notifs_title">Open Notifications in Popup(beta)</string>
     <string name="popup_view_notifs_summary">Use popup window to open notification apps</string>
 
+    <string name="beta_force_relaunch_title">Force Relaunch(beta)</string>
+    <string name="beta_force_relaunch_summary">Note: Fixes issue where some apps reload when opened in small windows, but may cause app exceptions</string>
+
     <string-array name="app_launch_mode_entries">
         <item>@string/app_launch_mode_bubble</item>
         <item>@string/app_launch_mode_lightweight</item>
