@@ -75,6 +75,10 @@ class SystemUIEXSettingsFragment : SettingsBasePreferenceFragment() {
         bindSwitch(KEY_POPUP_VIEW_NOTIFS, PreferenceHelper.isPopupViewNotifsEnabled(context, false)) {
             PreferenceHelper.setPopupViewNotifsEnabled(context, it)
         }
+
+        bindSwitch(KEY_BETA_FORCE_RELAUNCH, PreferenceHelper.isBetaForceRelaunchEnabled(context, false)) {
+            PreferenceHelper.setBetaForceRelaunchEnabled(context, it)
+        }
     }
 
     private fun bindSwitch(key: String, initialValue: Boolean, onChange: (Boolean) -> Unit) {
@@ -150,6 +154,7 @@ class SystemUIEXSettingsFragment : SettingsBasePreferenceFragment() {
         private const val KEY_LAUNCHER_GESTURE = "launcher_gesture"
         private const val KEY_APP_LAUNCH_MODE_PREF = "app_launch_mode_pref"
         private const val KEY_POPUP_VIEW_NOTIFS = "popup_view_notifs"
+        private const val KEY_BETA_FORCE_RELAUNCH = "beta_force_relaunch"
         private const val KEY_GESTURE_AREA_WIDTH = "gesture_area_width"
         private const val KEY_GESTURE_AREA_HEIGHT = "gesture_area_height"
         private const val VALUE_LAUNCH_MODE_BUBBLE = "bubble"
