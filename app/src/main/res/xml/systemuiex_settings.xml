@@ -64,6 +64,12 @@
             android:summary="@string/popup_view_notifs_summary"
             android:defaultValue="false" />
 
+        <SwitchPreferenceCompat
+            android:key="beta_force_relaunch"
+            android:title="@string/beta_force_relaunch_title"
+            android:summary="@string/beta_force_relaunch_summary"
+            android:defaultValue="false" />
+
         <com.android.settingslib.widget.FooterPreference
             android:key="gesture_area_warning"
             android:title="@string/gesture_area_warning" />

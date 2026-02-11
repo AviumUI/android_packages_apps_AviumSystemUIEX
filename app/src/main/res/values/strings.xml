@@ -53,6 +53,9 @@
     <string name="popup_view_notifs_title">Open Notifications in Popup(beta)</string>
     <string name="popup_view_notifs_summary">Use popup window to open notification apps</string>
 
+    <string name="beta_force_relaunch_title">Force Relaunch(beta)</string>
+    <string name="beta_force_relaunch_summary">When apps re-open in Pop-Up view, prevent them reload. This may cause abnormal behavior of apps.</string>
+
     <string-array name="app_launch_mode_entries">
         <item>@string/app_launch_mode_bubble</item>
         <item>@string/app_launch_mode_lightweight</item>
