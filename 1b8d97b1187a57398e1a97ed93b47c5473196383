@@ -18,6 +18,24 @@
       "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ea7184a7_c2ccb4f9",
+        "filename": "app/src/main/res/values-zh/strings.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1000001
+      },
+      "writtenOn": "2026-02-11T08:12:30Z",
+      "side": 1,
+      "message": "Fix applied.",
+      "parentUuid": "9dec6192_2924126f",
+      "revId": "1b8d97b1187a57398e1a97ed93b47c5473196383",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a43516de_978c7fc1",
@@ -31,6 +49,24 @@
       "writtenOn": "2026-02-11T08:11:03Z",
       "side": 1,
       "message": "```suggestion\n    \u003cstring name\u003d\"beta_force_relaunch_summary\"\u003eWhen apps re-open in Pop-Up view, prevent them reload. This may cause abnormal behavior of apps.\u003c/string\u003e\n```",
+      "revId": "1b8d97b1187a57398e1a97ed93b47c5473196383",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d441910e_700f6a63",
+        "filename": "app/src/main/res/values/strings.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1000001
+      },
+      "writtenOn": "2026-02-11T08:12:30Z",
+      "side": 1,
+      "message": "Fix applied.",
+      "parentUuid": "a43516de_978c7fc1",
       "revId": "1b8d97b1187a57398e1a97ed93b47c5473196383",
       "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
     }
