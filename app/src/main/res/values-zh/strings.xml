@@ -14,7 +14,7 @@
 
     <string name="top_bar_title">应用小窗</string>
     <string name="main_hint">轻量小窗</string>
-    <string name="main_ps">通过手势快速用小窗打开应用,即用即走，方便快捷</string>
+    <string name="main_ps">通过手势快速用小窗打开应用，即用即走，方便快捷</string>
     <string name="manage_label_title">管理悬浮菜单</string>
     <string name="manage_label_summary">点击管理应用列表</string>
 
@@ -42,7 +42,7 @@
     
     <string name="gesture_area_width_title">手势宽度</string>
     <string name="gesture_area_height_title">手势高度</string>
-    <string name="gesture_area_warning">注意手势触发区域越大可能会影响原有触摸手势</string>
+    <string name="gesture_area_warning">手势触发区域较大时会影响屏幕触摸</string>
 
     <string name="global_sidebar_title">全局侧边栏</string>
     <string name="global_sidebar_summary">点击管理侧边栏设置</string>
