@@ -50,7 +50,7 @@
     <string name="popup_view_notifs_title">通知打开 (beta)</string>
     <string name="popup_view_notifs_summary">使用轻量小窗打开通知应用</string>
 
-    <string name="beta_force_relaunch_title">强制重载 (beta)</string>
+    <string name="beta_force_relaunch_title">避免强制重载 (beta)</string>
     <string name="beta_force_relaunch_summary">解决部分应用小窗打开后会重新加载的问题，但可能会导致应用异常</string>
 
     <string-array name="app_launch_mode_entries">
