@@ -29,7 +29,8 @@ import android.os.SystemProperties
 object PreferenceHelper {
 
     const val PREFS_NAME = "SystemUIEX_Prefs"
-    private const val KEY_SELECTED_APPS = "selected_apps"
+    private const val KEY_SELECTED_APPS_SET = "selected_apps"
+    private const val KEY_SELECTED_APPS_LIST = "selected_apps_list"
     private const val ACTION_UPDATE_GESTURE_SETTINGS = "org.avium.UPDATE_GESTURE_SETTINGS"
 
     const val KEY_POPUP_DOUBLE_TAP_EXIT = "pop_up_view_double_tap_exit"
@@ -71,14 +72,40 @@ object PreferenceHelper {
         return prefs.getFloat(key, defaultValue)
     }
 
-    fun saveSelectedApps(context: Context, selectedApps: Set<String>) {
+    fun saveSelectedApps(context: Context, selectedApps: List<String>) {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        prefs.edit { putStringSet(KEY_SELECTED_APPS, selectedApps) }
+        val joined = selectedApps.joinToString("|")
+        prefs.edit {
+            putString(KEY_SELECTED_APPS_LIST, joined)
+            remove(KEY_SELECTED_APPS_SET)
+        }
     }
 
-    fun getSelectedApps(context: Context): Set<String> {
+    fun getSelectedApps(context: Context): List<String> {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        return prefs.getStringSet(KEY_SELECTED_APPS, emptySet()) ?: emptySet()
+        val stored = prefs.getString(KEY_SELECTED_APPS_LIST, null)
+        if (!stored.isNullOrEmpty()) {
+            return stored.split("|").filter { it.isNotBlank() }
+        }
+        val legacySet = prefs.getStringSet(KEY_SELECTED_APPS_SET, emptySet()) ?: emptySet()
+        if (legacySet.isEmpty()) {
+            return emptyList()
+        }
+        val sorted = sortPackagesByLabel(context, legacySet.toList())
+        saveSelectedApps(context, sorted)
+        return sorted
+    }
+
+    private fun sortPackagesByLabel(context: Context, packages: List<String>): List<String> {
+        val pm = context.packageManager
+        return packages.sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { packageName ->
+            try {
+                val appInfo = pm.getApplicationInfo(packageName, 0)
+                pm.getApplicationLabel(appInfo).toString()
+            } catch (_: Exception) {
+                packageName
+            }
+        })
     }
 
     fun setBoolean(context: Context, key: String, value: Boolean) {

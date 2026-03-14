@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <com.android.settingslib.widget.DrawableStateLinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/app_row_root"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/settingslib_expressive_space_extrasmall2"
+        android:layout_marginBottom="@dimen/settingslib_expressive_space_extrasmall2"
+        android:paddingStart="@dimen/settingslib_expressive_space_small2"
+        android:paddingEnd="@dimen/settingslib_expressive_space_small2"
+        android:paddingTop="@dimen/settingslib_expressive_space_small1"
+        android:paddingBottom="@dimen/settingslib_expressive_space_small1"
+        android:background="@drawable/app_selection_card_background"
+        android:theme="?expressivePreferenceTheme"
+        style="?expressivePreferenceRootLayoutStyle">
+
+    <LinearLayout
+        android:id="@+id/icon_frame"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/settingslib_expressive_space_small1"
+        style="?expressivePreferenceIconFrameStyle">
+
+        <ImageView
+            android:id="@+id/app_icon"
+            android:layout_width="@dimen/settingslib_expressive_space_medium3"
+            android:layout_height="@dimen/settingslib_expressive_space_medium3"
+            style="?expressivePreferenceIconStyle"
+            android:contentDescription="@null" />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:filterTouchesWhenObscured="false"
+        style="?expressivePreferenceTextFrameStyle">
+
+        <TextView
+            android:id="@+id/app_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/settingslib_materialColorOnSurface"
+            android:textStyle="bold"
+            style="?expressivePreferenceTextFrameTitleStyle" />
+
+        <TextView
+            android:id="@+id/app_package"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/app_name"
+            android:layout_alignStart="@id/app_name"
+            android:textColor="@color/settingslib_materialColorOnSurface"
+            style="?expressivePreferenceTextFrameSummaryStyle" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/widget_frame"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        style="?expressivePreferenceWidgetFrameStyle"
+        android:orientation="horizontal"
+        android:gravity="end|center_vertical">
+
+        <ImageView
+            android:id="@+id/app_drag"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="@dimen/settingslib_expressive_space_extrasmall4"
+            android:contentDescription="@string/drag_handle"
+            android:src="@drawable/drag_handle" />
+
+        <CheckBox
+            android:id="@+id/app_check"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:buttonTint="@color/app_selection_checkbox_tint" />
+    </LinearLayout>
+
+</com.android.settingslib.widget.DrawableStateLinearLayout>

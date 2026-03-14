@@ -2,4 +2,5 @@
 <resources>
     <style name="Theme.SystemUIEX" parent="android:Theme.Material.Light.NoActionBar" />
     <style name="Theme.SystemUIEX.Settings" parent="Theme.SubSettingsBase" />
+    <style name="Theme.SystemUIEX.Material" parent="Theme.MaterialComponents.DayNight.NoActionBar" />
 </resources>

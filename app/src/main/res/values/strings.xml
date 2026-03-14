@@ -5,6 +5,7 @@
     <string name="grant_overlay_permission">Grant \'Draw over other apps\' Permission</string>
     <string name="enable_accessibility_service">Enable Accessibility Service</string>
     <string name="selected_apps">Selected Apps</string>
+    <string name="all_apps">All Apps</string>
     <string name="no_apps_selected">No apps selected</string>
     <string name="manage_apps">Manage Apps</string>
     <string name="gesture_settings">Gesture Settings</string>
@@ -14,6 +15,7 @@
     <string name="select_up_to_x_apps">Select up to %d Apps</string>
     <string name="selection_limit_toast">You can only select up to %d apps</string>
     <string name="cannot_launch_app">Cannot launch this app</string>
+    <string name="drag_handle">Drag handle</string>
 
     <string name="top_bar_title">App Popup</string>
     <string name="main_hint">Lightweight Popup</string>

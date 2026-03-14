@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/settingslib_expressive_space_extrasmall2"
+    android:layout_marginBottom="@dimen/settingslib_expressive_space_extrasmall2"
+    android:paddingStart="0dp"
+    android:paddingEnd="0dp"
+    android:theme="?expressivePreferenceCategoryTheme"
+    style="?expressivePreferenceCategoryRootLayoutStyle">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:filterTouchesWhenObscured="false"
+        android:paddingStart="0dp"
+        android:paddingEnd="0dp"
+        style="?expressivePreferenceCategoryRelativeLayoutStyle">
+
+        <TextView
+            android:id="@+id/section_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="@dimen/settingslib_expressive_space_extrasmall3"
+            android:textColor="?android:attr/colorAccent"
+            android:textStyle="bold"
+            style="?expressivePreferenceCategoryTitleStyle" />
+    </RelativeLayout>
+</LinearLayout>

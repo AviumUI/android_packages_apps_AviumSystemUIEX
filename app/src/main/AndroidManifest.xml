@@ -47,7 +47,7 @@
             android:name=".ui.selection.AppSelectionActivity"
             android:exported="true"
             android:label="Select Apps"
-            android:theme="@style/Theme.SystemUIEX" />
+            android:theme="@style/Theme.SubSettingsBase.Expressive" />
 
         <activity
             android:name=".ui.TestGestureActivity"

@@ -5,12 +5,14 @@
     <string name="grant_overlay_permission">授予"在其他应用上层显示"权限</string>
     <string name="enable_accessibility_service">启用辅助功能服务</string>
     <string name="selected_apps">已选择的应用</string>
+    <string name="all_apps">全部应用</string>
     <string name="no_apps_selected">未选择应用</string>
     <string name="manage_apps">管理应用</string>
     <string name="gesture_settings">手势设置</string>
     <string name="select_up_to_x_apps">最多选择 %d 个应用</string>
     <string name="selection_limit_toast">您最多只能选择 %d 个应用</string>
     <string name="cannot_launch_app">无法启动此应用</string>
+    <string name="drag_handle">拖动手柄</string>
 
     <string name="top_bar_title">应用小窗</string>
     <string name="main_hint">轻量小窗</string>
