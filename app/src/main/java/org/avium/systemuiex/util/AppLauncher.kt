@@ -21,9 +21,10 @@
 
 package org.avium.systemuiex.util
 
+import android.app.ActivityOptions
+import android.app.WindowConfiguration
 import android.content.Context
 import android.content.Intent
-import android.app.ActivityOptions
 import android.widget.Toast
 import org.avium.systemuiex.R
 
@@ -42,15 +43,38 @@ object AppLauncher {
     */
 
     fun launchApp(context: Context, packageName: String) {
-        val useBubbleMode = PreferenceHelper.getPopupViewMode(context, true)
-        
-        if (useBubbleMode) {
-            val intent = Intent("org.avium.LAUNCH_BUBBLE")
-            intent.putExtra("package_name", packageName)
-            intent.addFlags(Intent.FLAG_RECEIVER_INCLUDE_BACKGROUND)
-            context.sendBroadcast(intent)
-        } else {
-            launchAppNormally(context, packageName)
+        when (PreferenceHelper.getAppLaunchMode(context, PreferenceHelper.MODE_BUBBLE)) {
+            PreferenceHelper.MODE_BUBBLE -> {
+                val intent = Intent("org.avium.LAUNCH_BUBBLE")
+                intent.putExtra("package_name", packageName)
+                intent.addFlags(Intent.FLAG_RECEIVER_INCLUDE_BACKGROUND)
+                context.sendBroadcast(intent)
+            }
+            PreferenceHelper.MODE_POPUP_VIEW -> {
+                launchAppInPopupView(context, packageName)
+            }
+            else -> {
+                launchAppNormally(context, packageName)
+            }
+        }
+    }
+
+    private fun launchAppInPopupView(context: Context, packageName: String) {
+        val launchIntent = context.packageManager.getLaunchIntentForPackage(packageName)
+        if (launchIntent == null) {
+            showLaunchFailToast(context)
+            return
+        }
+        launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        try {
+            val options = ActivityOptions.makeBasic()
+            options.setLaunchWindowingMode(WindowConfiguration.WINDOWING_MODE_MINI_WINDOW_EXT)
+            options.setPendingIntentBackgroundActivityStartMode(
+                ActivityOptions.MODE_BACKGROUND_ACTIVITY_START_ALLOWED
+            )
+            context.startActivity(launchIntent, options.toBundle())
+        } catch (_: Exception) {
+            showLaunchFailToast(context)
         }
     }
 

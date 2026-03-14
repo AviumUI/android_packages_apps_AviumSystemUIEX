@@ -23,6 +23,7 @@ import android.os.Bundle
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.SwitchPreferenceCompat
+import androidx.appcompat.app.AlertDialog
 import com.android.settingslib.widget.SettingsBasePreferenceFragment
 import com.android.settingslib.widget.SliderPreference
 import org.avium.systemuiex.ui.selection.AppSelectionActivity
@@ -76,9 +77,7 @@ class SystemUIEXSettingsFragment : SettingsBasePreferenceFragment() {
             PreferenceHelper.setPopupViewNotifsEnabled(context, it)
         }
 
-        bindSwitch(KEY_BETA_FORCE_RELAUNCH, PreferenceHelper.isBetaForceRelaunchEnabled(context, false)) {
-            PreferenceHelper.setBetaForceRelaunchEnabled(context, it)
-        }
+        bindBetaForceRelaunchSwitch()
     }
 
     private fun bindSwitch(key: String, initialValue: Boolean, onChange: (Boolean) -> Unit) {
@@ -120,14 +119,17 @@ class SystemUIEXSettingsFragment : SettingsBasePreferenceFragment() {
         val pref = findPreference<ListPreference>(KEY_APP_LAUNCH_MODE_PREF) ?: return
         pref.isPersistent = false
 
-        val useBubbleMode = PreferenceHelper.getPopupViewMode(requireContext(), true)
-        pref.value = if (useBubbleMode) VALUE_LAUNCH_MODE_BUBBLE else VALUE_LAUNCH_MODE_FREE_WINDOW
+        val mode = PreferenceHelper.getAppLaunchMode(requireContext(), PreferenceHelper.MODE_BUBBLE)
+        pref.value = mode
 
         pref.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
             val selectedValue = newValue as String
             val useBubble = selectedValue == VALUE_LAUNCH_MODE_BUBBLE
             PreferenceHelper.setBoolean(requireContext(), PreferenceHelper.KEY_APP_LAUNCH_MODE, useBubble)
-            PreferenceHelper.setPopupViewMode(requireContext(), useBubble)
+            PreferenceHelper.setAppLaunchMode(requireContext(), selectedValue)
+            if (isPopUpViewModeSelected()) {
+                disableBetaForceRelaunch()
+            }
             true
         }
     }
@@ -147,6 +149,47 @@ class SystemUIEXSettingsFragment : SettingsBasePreferenceFragment() {
         }
     }
 
+    private fun bindBetaForceRelaunchSwitch() {
+        val pref = findPreference<SwitchPreferenceCompat>(KEY_BETA_FORCE_RELAUNCH) ?: return
+        pref.isPersistent = false
+        pref.isChecked = PreferenceHelper.isBetaForceRelaunchEnabled(requireContext(), false)
+        pref.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+            val enabled = newValue as Boolean
+            if (enabled && isPopUpViewModeSelected()) {
+                showPopupModeDialog()
+                return@OnPreferenceChangeListener false
+            }
+            PreferenceHelper.setBetaForceRelaunchEnabled(requireContext(), enabled)
+            true
+        }
+
+        if (isPopUpViewModeSelected() && pref.isChecked) {
+            disableBetaForceRelaunch()
+        }
+    }
+
+    private fun disableBetaForceRelaunch() {
+        val pref = findPreference<SwitchPreferenceCompat>(KEY_BETA_FORCE_RELAUNCH) ?: return
+        if (pref.isChecked) {
+            pref.isChecked = false
+        }
+        PreferenceHelper.setBetaForceRelaunchEnabled(requireContext(), false)
+    }
+
+    private fun isPopUpViewModeSelected(): Boolean {
+        val mode = PreferenceHelper.getAppLaunchMode(requireContext(), PreferenceHelper.MODE_BUBBLE)
+        return mode == VALUE_LAUNCH_MODE_POPUP_VIEW
+    }
+
+    private fun showPopupModeDialog() {
+        if (!isAdded) return
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.popup_beta_force_relaunch_disabled_title)
+            .setMessage(R.string.popup_beta_force_relaunch_disabled_message)
+            .setPositiveButton(android.R.string.ok, null)
+            .show()
+    }
+
     companion object {
         private const val KEY_MANAGE_APPS = "manage_apps"
         private const val KEY_GLOBAL_SIDEBAR = "global_sidebar"
@@ -159,5 +202,6 @@ class SystemUIEXSettingsFragment : SettingsBasePreferenceFragment() {
         private const val KEY_GESTURE_AREA_HEIGHT = "gesture_area_height"
         private const val VALUE_LAUNCH_MODE_BUBBLE = "bubble"
         private const val VALUE_LAUNCH_MODE_FREE_WINDOW = "free_window"
+        private const val VALUE_LAUNCH_MODE_POPUP_VIEW = "popup_view"
     }
 }

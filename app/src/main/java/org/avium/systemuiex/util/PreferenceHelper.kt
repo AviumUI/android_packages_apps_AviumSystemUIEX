@@ -51,6 +51,7 @@ object PreferenceHelper {
 
     const val SYS_PROP_POPUP_VIEW_MODE = "persist.avium.popup_view"
     const val KEY_POPUP_VIEW_MODE_FALLBACK = "popup_view_mode_fallback"
+    const val KEY_POPUP_VIEW_MODE_FALLBACK_MODE = "popup_view_mode_fallback_mode"
 
     const val SYS_PROP_POPUP_VIEW_NOTIFS = "persist.avium.popup_view_notifs"
     const val KEY_POPUP_VIEW_NOTIFS_FALLBACK = "popup_view_notifs_fallback"
@@ -61,6 +62,11 @@ object PreferenceHelper {
     const val KEY_TRIGGER_WIDTH = "trigger_width"
     const val KEY_TRIGGER_HEIGHT = "trigger_height"
     const val KEY_SWIPE_TOLERANCE = "swipe_tolerance"
+
+    const val MODE_BUBBLE = "bubble"
+    const val MODE_FREEFORM = "free_window"
+    const val MODE_POPUP_VIEW = "popup_view"
+    private const val MODE_FREEFORM_LEGACY = "free window"
 
     fun setFloat(context: Context, key: String, value: Float) {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -224,32 +230,78 @@ object PreferenceHelper {
         }
     }
 
-    fun setPopupViewMode(context: Context, useBubbleMode: Boolean) {
-        val value = if (useBubbleMode) "bubble" else "free window"
+    fun setAppLaunchMode(context: Context, mode: String) {
+        val value = normalizeLaunchMode(mode)
         try {
             SystemProperties.set(SYS_PROP_POPUP_VIEW_MODE, value)
             val readBack = SystemProperties.get(SYS_PROP_POPUP_VIEW_MODE, "")
             if (readBack != value) {
-                setBoolean(context, KEY_POPUP_VIEW_MODE_FALLBACK, useBubbleMode)
+                setString(context, KEY_POPUP_VIEW_MODE_FALLBACK_MODE, value)
             } else {
-                setBoolean(context, KEY_POPUP_VIEW_MODE_FALLBACK, useBubbleMode)
+                setString(context, KEY_POPUP_VIEW_MODE_FALLBACK_MODE, value)
             }
         } catch (e: Exception) {
-            setBoolean(context, KEY_POPUP_VIEW_MODE_FALLBACK, useBubbleMode)
+            setString(context, KEY_POPUP_VIEW_MODE_FALLBACK_MODE, value)
         }
     }
 
-    fun getPopupViewMode(context: Context, defaultValue: Boolean = true): Boolean {
+    fun getAppLaunchMode(context: Context, defaultMode: String = MODE_BUBBLE): String {
+        val normalizedDefault = normalizeLaunchMode(defaultMode)
         return try {
-            val prop = SystemProperties.get(SYS_PROP_POPUP_VIEW_MODE, if (defaultValue) "bubble" else "free window")
-            when (prop) {
-                "bubble" -> true
-                "free window" -> false
-                else -> getBoolean(context, KEY_POPUP_VIEW_MODE_FALLBACK, defaultValue)
+            val prop = SystemProperties.get(SYS_PROP_POPUP_VIEW_MODE, normalizedDefault)
+            val normalizedProp = normalizeLaunchModeOrNull(prop)
+            if (normalizedProp != null) {
+                normalizedProp
+            } else {
+                getFallbackLaunchMode(context, normalizedDefault)
             }
         } catch (e: Exception) {
-            getBoolean(context, KEY_POPUP_VIEW_MODE_FALLBACK, defaultValue)
+            getFallbackLaunchMode(context, normalizedDefault)
         }
+    }
+
+    fun setPopupViewMode(context: Context, useBubbleMode: Boolean) {
+        val value = if (useBubbleMode) MODE_BUBBLE else MODE_FREEFORM
+        setAppLaunchMode(context, value)
+        setBoolean(context, KEY_POPUP_VIEW_MODE_FALLBACK, useBubbleMode)
+    }
+
+    fun getPopupViewMode(context: Context, defaultValue: Boolean = true): Boolean {
+        val defaultMode = if (defaultValue) MODE_BUBBLE else MODE_FREEFORM
+        return getAppLaunchMode(context, defaultMode) == MODE_BUBBLE
+    }
+
+    private fun getFallbackLaunchMode(context: Context, defaultMode: String): String {
+        val stored = getString(context, KEY_POPUP_VIEW_MODE_FALLBACK_MODE, "")
+        val normalizedStored = normalizeLaunchModeOrNull(stored)
+        if (normalizedStored != null) {
+            return normalizedStored
+        }
+        val legacy = getBoolean(context, KEY_POPUP_VIEW_MODE_FALLBACK, defaultMode == MODE_BUBBLE)
+        return if (legacy) MODE_BUBBLE else MODE_FREEFORM
+    }
+
+    private fun normalizeLaunchMode(mode: String): String {
+        return normalizeLaunchModeOrNull(mode) ?: MODE_BUBBLE
+    }
+
+    private fun normalizeLaunchModeOrNull(mode: String): String? {
+        return when (mode) {
+            MODE_BUBBLE -> MODE_BUBBLE
+            MODE_FREEFORM, MODE_FREEFORM_LEGACY -> MODE_FREEFORM
+            MODE_POPUP_VIEW -> MODE_POPUP_VIEW
+            else -> null
+        }
+    }
+
+    private fun setString(context: Context, key: String, value: String) {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        prefs.edit { putString(key, value) }
+    }
+
+    private fun getString(context: Context, key: String, defaultValue: String): String {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        return prefs.getString(key, defaultValue) ?: defaultValue
     }
 
     fun setPopupViewNotifsEnabled(context: Context, enabled: Boolean) {

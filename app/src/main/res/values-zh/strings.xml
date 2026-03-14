@@ -35,6 +35,7 @@
     
     <string name="app_launch_mode_title">应用启动方式</string>
     <string name="app_launch_mode_bubble">气泡窗口</string>
+    <string name="app_launch_mode_popup_view">Pop-Up View</string>
     <string name="app_launch_mode_lightweight">轻量小窗 (beta)</string>
     
     <string name="popupview_summary">在通过特定手势启用轻量小窗</string>
@@ -54,14 +55,18 @@
 
     <string name="beta_force_relaunch_title">避免强制重载 (beta)</string>
     <string name="beta_force_relaunch_summary">解决部分应用小窗打开后会重新加载的问题，但可能会导致应用异常</string>
+    <string name="popup_beta_force_relaunch_disabled_title">选项无法开启</string>
+    <string name="popup_beta_force_relaunch_disabled_message">此选项在 Pop-Up 小窗模式上无需启用。</string>
 
     <string-array name="app_launch_mode_entries">
         <item>@string/app_launch_mode_bubble</item>
+        <item>@string/app_launch_mode_popup_view</item>
         <item>@string/app_launch_mode_lightweight</item>
     </string-array>
 
     <string-array name="app_launch_mode_values">
         <item>bubble</item>
+        <item>popup_view</item>
         <item>free_window</item>
     </string-array>
 

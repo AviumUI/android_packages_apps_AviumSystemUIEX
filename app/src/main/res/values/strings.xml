@@ -38,6 +38,7 @@
 
     <string name="app_launch_mode_title">App Launch Mode</string>
     <string name="app_launch_mode_bubble">Bubble Window</string>
+    <string name="app_launch_mode_popup_view">Pop-Up View</string>
     <string name="app_launch_mode_lightweight">Lightweight Window (beta)</string>
 
     <string name="popupview_summary">Open apps in a floating pop-up window for multitasking</string>
@@ -57,14 +58,18 @@
 
     <string name="beta_force_relaunch_title">Prevent force Relaunch(beta)</string>
     <string name="beta_force_relaunch_summary">When apps re-open in Pop-Up view, prevent them reload. This may cause abnormal behavior of apps.</string>
+    <string name="popup_beta_force_relaunch_disabled_title">Not available in Pop-Up View</string>
+    <string name="popup_beta_force_relaunch_disabled_message">This option is disabled when App Launch Mode is set to Pop-Up View.</string>
 
     <string-array name="app_launch_mode_entries">
         <item>@string/app_launch_mode_bubble</item>
+        <item>@string/app_launch_mode_popup_view</item>
         <item>@string/app_launch_mode_lightweight</item>
     </string-array>
 
     <string-array name="app_launch_mode_values">
         <item>bubble</item>
+        <item>popup_view</item>
         <item>free_window</item>
     </string-array>
 
