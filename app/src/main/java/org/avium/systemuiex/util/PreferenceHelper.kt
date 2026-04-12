@@ -55,9 +55,6 @@ object PreferenceHelper {
     const val SYS_PROP_POPUP_VIEW_NOTIFS = "persist.avium.popup_view_notifs"
     const val KEY_POPUP_VIEW_NOTIFS_FALLBACK = "popup_view_notifs_fallback"
 
-    const val SYS_PROP_BETA_FORCE_RELAUNCH = "persist.avium.beta_force_relaunch"
-    const val KEY_BETA_FORCE_RELAUNCH_FALLBACK = "beta_force_relaunch_fallback"
-
     const val KEY_TRIGGER_WIDTH = "trigger_width"
     const val KEY_TRIGGER_HEIGHT = "trigger_height"
     const val KEY_SWIPE_TOLERANCE = "swipe_tolerance"
@@ -277,34 +274,6 @@ object PreferenceHelper {
             }
         } catch (e: Exception) {
             getBoolean(context, KEY_POPUP_VIEW_NOTIFS_FALLBACK, defaultValue)
-        }
-    }
-
-    fun setBetaForceRelaunchEnabled(context: Context, enabled: Boolean) {
-        val value = if (enabled) "true" else "false"
-        try {
-            SystemProperties.set(SYS_PROP_BETA_FORCE_RELAUNCH, value)
-            val readBack = SystemProperties.get(SYS_PROP_BETA_FORCE_RELAUNCH, if (enabled) "false" else "true")
-            if (readBack != value) {
-                setBoolean(context, KEY_BETA_FORCE_RELAUNCH_FALLBACK, enabled)
-            } else {
-                setBoolean(context, KEY_BETA_FORCE_RELAUNCH_FALLBACK, enabled)
-            }
-        } catch (e: Exception) {
-            setBoolean(context, KEY_BETA_FORCE_RELAUNCH_FALLBACK, enabled)
-        }
-    }
-
-    fun isBetaForceRelaunchEnabled(context: Context, defaultValue: Boolean = false): Boolean {
-        return try {
-            val prop = SystemProperties.get(SYS_PROP_BETA_FORCE_RELAUNCH, if (defaultValue) "true" else "false")
-            when (prop) {
-                "1", "true", "TRUE" -> true
-                "0", "false", "FALSE" -> false
-                else -> getBoolean(context, KEY_BETA_FORCE_RELAUNCH_FALLBACK, defaultValue)
-            }
-        } catch (e: Exception) {
-            getBoolean(context, KEY_BETA_FORCE_RELAUNCH_FALLBACK, defaultValue)
         }
     }
 }
