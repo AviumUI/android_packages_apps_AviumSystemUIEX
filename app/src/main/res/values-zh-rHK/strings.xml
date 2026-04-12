@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2025-2026 The AviumUI Project
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+<resources>
+    <string name="app_name">輕量小窗</string>
+    <string name="app_settings_title">輕量小窗</string>
+    <string name="grant_overlay_permission">授予「在其他應用上層顯示」權限</string>
+    <string name="enable_accessibility_service">啟用輔助功能服務</string>
+    <string name="selected_apps">已選擇的應用</string>
+    <string name="all_apps">全部應用</string>
+    <string name="no_apps_selected">未選擇應用</string>
+    <string name="manage_apps">管理應用</string>
+    <string name="gesture_settings">手勢設定</string>
+    <string name="select_up_to_x_apps">最多選擇 %d 個應用</string>
+    <string name="selection_limit_toast">你最多只能選擇 %d 個應用</string>
+    <string name="cannot_launch_app">無法啟動此應用</string>
+    <string name="drag_handle">拖動手柄</string>
+    <string name="top_bar_title">應用小窗</string>
+    <string name="main_hint">輕量小窗</string>
+    <string name="main_ps">透過手勢快速以小窗開啟應用，即用即走，方便快捷</string>
+    <string name="manage_label_title">管理懸浮選單</string>
+    <string name="manage_label_summary">點按以管理應用清單</string>
+    <string name="popup_settings_title">小窗視圖設定</string>
+    <string name="popup_double_tap_exit_title">雙擊空白區域退出</string>
+    <string name="popup_double_tap_exit_summary">啟用後，雙擊小窗外的區域將會關閉小窗。</string>
+    <string name="popup_notification_portrait_title">通知 → 小窗（直向）</string>
+    <string name="popup_notification_portrait_summary">直向模式下點按通知時，會以小窗開啟應用。</string>
+    <string name="popup_notification_landscape_title">通知 → 小窗（橫向）</string>
+    <string name="popup_notification_landscape_summary">橫向模式下點按通知時，會以小窗開啟應用。</string>
+    <string name="popup_gesture">使用手勢喚醒</string>
+    <string name="popup_gesture_summary">透過在屏幕底部左右兩側向中央滑動，快捷開啟選單</string>
+    <string name="app_launch_mode_title">應用啟動方式</string>
+    <string name="app_launch_mode_bubble">氣泡視窗</string>
+    <string name="app_launch_mode_lightweight">輕量小窗 (beta)</string>
+    <string name="popupview_summary">透過特定手勢啟用輕量小窗</string>
+    <string name="launcher_gesture_title">向上懸停掛起應用</string>
+    <string name="launcher_gesture_summary">啟用向上懸停手勢以掛起目前應用程式</string>
+    <string name="gesture_area_width_title">手勢寬度</string>
+    <string name="gesture_area_height_title">手勢高度</string>
+    <string name="gesture_area_warning">手勢觸發區域較大時會影響屏幕觸控</string>
+    <string name="global_sidebar_title">全域側邊欄</string>
+    <string name="global_sidebar_summary">點按以管理側邊欄設定</string>
+    <string name="popup_view_notifs_title">通知開啟 (beta)</string>
+    <string name="popup_view_notifs_summary">使用輕量小窗開啟通知應用</string>
+    <string name="beta_force_relaunch_title">避免強制重新載入 (beta)</string>
+    <string name="beta_force_relaunch_summary">解決部分應用以小窗開啟後會重新載入的問題，但可能會導致應用異常</string>
+</resources>
