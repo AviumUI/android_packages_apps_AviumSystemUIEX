@@ -70,12 +70,6 @@ fun HomeScreen(
         )
     }
 
-    val popupViewNotifsEnabled = remember {
-        mutableStateOf(
-            PreferenceHelper.isPopupViewNotifsEnabled(context, false)
-        )
-    }
-
     var gestureAreaWidth by remember { mutableStateOf(20f) }
     var gestureAreaHeight by remember { mutableStateOf(20f) }
 
@@ -226,16 +220,6 @@ fun HomeScreen(
                     useBubbleMode = checked
                     PreferenceHelper.setBoolean(context, PreferenceHelper.KEY_APP_LAUNCH_MODE, checked)
                     PreferenceHelper.setPopupViewMode(context, checked)
-                }
-            )
-
-            SettingSwitchRow(
-                title = stringResource(R.string.popup_view_notifs_title),
-                summary = stringResource(R.string.popup_view_notifs_summary),
-                checked = popupViewNotifsEnabled.value,
-                onCheckedChange = {
-                    popupViewNotifsEnabled.value = it
-                    PreferenceHelper.setPopupViewNotifsEnabled(context, it)
                 }
             )
 

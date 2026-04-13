@@ -23,6 +23,8 @@ package org.avium.systemuiex.util
 
 import android.content.Context
 import android.content.Intent
+import android.os.UserHandle
+import android.provider.Settings
 import androidx.core.content.edit
 import android.os.SystemProperties
 
@@ -52,8 +54,11 @@ object PreferenceHelper {
     const val SYS_PROP_POPUP_VIEW_MODE = "persist.avium.popup_view"
     const val KEY_POPUP_VIEW_MODE_FALLBACK = "popup_view_mode_fallback"
 
-    const val SYS_PROP_POPUP_VIEW_NOTIFS = "persist.avium.popup_view_notifs"
-    const val KEY_POPUP_VIEW_NOTIFS_FALLBACK = "popup_view_notifs_fallback"
+    const val KEY_POPUP_NOTIF_JUMP_PORTRAIT_FALLBACK = "popup_notif_jump_portrait_fallback"
+    const val KEY_POPUP_NOTIF_JUMP_LANDSCAPE_FALLBACK = "popup_notif_jump_landscape_fallback"
+    const val KEY_POPUP_NOTIF_BLACKLIST_FALLBACK = "popup_notif_blacklist_fallback"
+    const val KEY_POPUP_SINGLE_TAP_ACTION_FALLBACK = "popup_single_tap_action_fallback"
+    const val KEY_POPUP_DOUBLE_TAP_ACTION_FALLBACK = "popup_double_tap_action_fallback"
 
     const val KEY_TRIGGER_WIDTH = "trigger_width"
     const val KEY_TRIGGER_HEIGHT = "trigger_height"
@@ -249,31 +254,138 @@ object PreferenceHelper {
         }
     }
 
-    fun setPopupViewNotifsEnabled(context: Context, enabled: Boolean) {
-        val value = if (enabled) "1" else "0"
+    fun setPopupNotificationJumpPortrait(context: Context, enabled: Boolean) {
         try {
-            SystemProperties.set(SYS_PROP_POPUP_VIEW_NOTIFS, value)
-            val readBack = SystemProperties.get(SYS_PROP_POPUP_VIEW_NOTIFS, if (enabled) "0" else "1")
-            if (readBack != value) {
-                setBoolean(context, KEY_POPUP_VIEW_NOTIFS_FALLBACK, enabled)
-            } else {
-                setBoolean(context, KEY_POPUP_VIEW_NOTIFS_FALLBACK, enabled)
-            }
+            Settings.System.putIntForUser(
+                context.contentResolver,
+                "pop_up_notification_jump_portrait",
+                if (enabled) 1 else 0,
+                UserHandle.USER_CURRENT
+            )
         } catch (e: Exception) {
-            setBoolean(context, KEY_POPUP_VIEW_NOTIFS_FALLBACK, enabled)
+            setBoolean(context, KEY_POPUP_NOTIF_JUMP_PORTRAIT_FALLBACK, enabled)
         }
     }
 
-    fun isPopupViewNotifsEnabled(context: Context, defaultValue: Boolean = false): Boolean {
+    fun isPopupNotificationJumpPortrait(context: Context, defaultValue: Boolean = false): Boolean {
         return try {
-            val prop = SystemProperties.get(SYS_PROP_POPUP_VIEW_NOTIFS, if (defaultValue) "1" else "0")
-            when (prop) {
-                "1", "true", "TRUE" -> true
-                "0", "false", "FALSE" -> false
-                else -> getBoolean(context, KEY_POPUP_VIEW_NOTIFS_FALLBACK, defaultValue)
-            }
+            Settings.System.getIntForUser(
+                context.contentResolver,
+                "pop_up_notification_jump_portrait",
+                if (defaultValue) 1 else 0,
+                UserHandle.USER_CURRENT
+            ) == 1
         } catch (e: Exception) {
-            getBoolean(context, KEY_POPUP_VIEW_NOTIFS_FALLBACK, defaultValue)
+            getBoolean(context, KEY_POPUP_NOTIF_JUMP_PORTRAIT_FALLBACK, defaultValue)
+        }
+    }
+
+    fun setPopupNotificationJumpLandscape(context: Context, enabled: Boolean) {
+        try {
+            Settings.System.putIntForUser(
+                context.contentResolver,
+                "pop_up_notification_jump_landscape",
+                if (enabled) 1 else 0,
+                UserHandle.USER_CURRENT
+            )
+        } catch (e: Exception) {
+            setBoolean(context, KEY_POPUP_NOTIF_JUMP_LANDSCAPE_FALLBACK, enabled)
+        }
+    }
+
+    fun isPopupNotificationJumpLandscape(context: Context, defaultValue: Boolean = false): Boolean {
+        return try {
+            Settings.System.getIntForUser(
+                context.contentResolver,
+                "pop_up_notification_jump_landscape",
+                if (defaultValue) 1 else 0,
+                UserHandle.USER_CURRENT
+            ) == 1
+        } catch (e: Exception) {
+            getBoolean(context, KEY_POPUP_NOTIF_JUMP_LANDSCAPE_FALLBACK, defaultValue)
+        }
+    }
+
+    fun setPopupNotificationBlacklist(context: Context, blacklist: String) {
+        try {
+            Settings.System.putStringForUser(
+                context.contentResolver,
+                "pop_up_notification_blacklist",
+                blacklist,
+                UserHandle.USER_CURRENT
+            )
+        } catch (e: Exception) {
+            val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            prefs.edit { putString(KEY_POPUP_NOTIF_BLACKLIST_FALLBACK, blacklist) }
+        }
+    }
+
+    fun getPopupNotificationBlacklist(context: Context, defaultValue: String = ""): String {
+        return try {
+            Settings.System.getStringForUser(
+                context.contentResolver,
+                "pop_up_notification_blacklist",
+                UserHandle.USER_CURRENT
+            ) ?: defaultValue
+        } catch (e: Exception) {
+            val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            prefs.getString(KEY_POPUP_NOTIF_BLACKLIST_FALLBACK, defaultValue) ?: defaultValue
+        }
+    }
+
+    fun setPopupSingleTapAction(context: Context, action: Int) {
+        try {
+            Settings.System.putIntForUser(
+                context.contentResolver,
+                "pop_up_single_tap_action",
+                action,
+                UserHandle.USER_CURRENT
+            )
+        } catch (e: Exception) {
+            val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            prefs.edit { putInt(KEY_POPUP_SINGLE_TAP_ACTION_FALLBACK, action) }
+        }
+    }
+
+    fun getPopupSingleTapAction(context: Context, defaultValue: Int = 1): Int {
+        return try {
+            Settings.System.getIntForUser(
+                context.contentResolver,
+                "pop_up_single_tap_action",
+                defaultValue,
+                UserHandle.USER_CURRENT
+            )
+        } catch (e: Exception) {
+            val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            prefs.getInt(KEY_POPUP_SINGLE_TAP_ACTION_FALLBACK, defaultValue)
+        }
+    }
+
+    fun setPopupDoubleTapAction(context: Context, action: Int) {
+        try {
+            Settings.System.putIntForUser(
+                context.contentResolver,
+                "pop_up_double_tap_action",
+                action,
+                UserHandle.USER_CURRENT
+            )
+        } catch (e: Exception) {
+            val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            prefs.edit { putInt(KEY_POPUP_DOUBLE_TAP_ACTION_FALLBACK, action) }
+        }
+    }
+
+    fun getPopupDoubleTapAction(context: Context, defaultValue: Int = 2): Int {
+        return try {
+            Settings.System.getIntForUser(
+                context.contentResolver,
+                "pop_up_double_tap_action",
+                defaultValue,
+                UserHandle.USER_CURRENT
+            )
+        } catch (e: Exception) {
+            val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            prefs.getInt(KEY_POPUP_DOUBLE_TAP_ACTION_FALLBACK, defaultValue)
         }
     }
 }

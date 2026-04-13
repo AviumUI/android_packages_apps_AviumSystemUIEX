@@ -37,6 +37,7 @@ class SystemUIEXSettingsFragment : SettingsBasePreferenceFragment() {
         setPreferencesFromResource(R.xml.systemuiex_settings, rootKey)
 
         bindActionPreferences()
+        bindBehaviorPreferences()
         bindSwitchPreferences()
         bindSliderPreferences()
     }
@@ -57,6 +58,53 @@ class SystemUIEXSettingsFragment : SettingsBasePreferenceFragment() {
                 true
             }
         }
+
+        findPreference<Preference>(KEY_POPUP_NOTIFICATION_BLACKLIST)?.apply {
+            isPersistent = false
+            setOnPreferenceClickListener {
+                openBlacklistSelection()
+                true
+            }
+        }
+    }
+
+    private fun bindBehaviorPreferences() {
+        val context = requireContext()
+
+        bindSwitch(KEY_POPUP_NOTIFICATION_JUMP_PORTRAIT, PreferenceHelper.isPopupNotificationJumpPortrait(context, false)) {
+            PreferenceHelper.setPopupNotificationJumpPortrait(context, it)
+        }
+
+        bindSwitch(KEY_POPUP_NOTIFICATION_JUMP_LANDSCAPE, PreferenceHelper.isPopupNotificationJumpLandscape(context, false)) {
+            PreferenceHelper.setPopupNotificationJumpLandscape(context, it)
+        }
+
+        bindListPreference(KEY_POPUP_SINGLE_TAP_ACTION, PreferenceHelper.getPopupSingleTapAction(context, 1).toString()) {
+            PreferenceHelper.setPopupSingleTapAction(context, it.toInt())
+        }
+
+        bindListPreference(KEY_POPUP_DOUBLE_TAP_ACTION, PreferenceHelper.getPopupDoubleTapAction(context, 2).toString()) {
+            PreferenceHelper.setPopupDoubleTapAction(context, it.toInt())
+        }
+    }
+
+    private fun bindListPreference(key: String, initialValue: String, onChange: (String) -> Unit) {
+        val pref = findPreference<ListPreference>(key) ?: return
+        pref.isPersistent = false
+        pref.value = initialValue
+
+        pref.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+            val selectedValue = newValue as String
+            onChange(selectedValue)
+            true
+        }
+    }
+
+    private fun openBlacklistSelection() {
+        val intent = Intent(requireContext(), AppSelectionActivity::class.java).apply {
+            putExtra(AppSelectionActivity.EXTRA_MODE, AppSelectionActivity.MODE_BLACKLIST)
+        }
+        startActivity(intent)
     }
 
     private fun bindSwitchPreferences() {
@@ -71,10 +119,6 @@ class SystemUIEXSettingsFragment : SettingsBasePreferenceFragment() {
         }
 
         bindLaunchModePreference()
-
-        bindSwitch(KEY_POPUP_VIEW_NOTIFS, PreferenceHelper.isPopupViewNotifsEnabled(context, false)) {
-            PreferenceHelper.setPopupViewNotifsEnabled(context, it)
-        }
     }
 
     private fun bindSwitch(key: String, initialValue: Boolean, onChange: (Boolean) -> Unit) {
@@ -149,10 +193,15 @@ class SystemUIEXSettingsFragment : SettingsBasePreferenceFragment() {
         private const val KEY_POPUP_GESTURE = "popup_gesture"
         private const val KEY_LAUNCHER_GESTURE = "launcher_gesture"
         private const val KEY_APP_LAUNCH_MODE_PREF = "app_launch_mode_pref"
-        private const val KEY_POPUP_VIEW_NOTIFS = "popup_view_notifs"
         private const val KEY_GESTURE_AREA_WIDTH = "gesture_area_width"
         private const val KEY_GESTURE_AREA_HEIGHT = "gesture_area_height"
         private const val VALUE_LAUNCH_MODE_BUBBLE = "bubble"
         private const val VALUE_LAUNCH_MODE_FREE_WINDOW = "free_window"
+
+        private const val KEY_POPUP_NOTIFICATION_JUMP_PORTRAIT = "popup_notification_jump_portrait"
+        private const val KEY_POPUP_NOTIFICATION_JUMP_LANDSCAPE = "popup_notification_jump_landscape"
+        private const val KEY_POPUP_NOTIFICATION_BLACKLIST = "popup_notification_blacklist"
+        private const val KEY_POPUP_SINGLE_TAP_ACTION = "popup_single_tap_action"
+        private const val KEY_POPUP_DOUBLE_TAP_ACTION = "popup_double_tap_action"
     }
 }
