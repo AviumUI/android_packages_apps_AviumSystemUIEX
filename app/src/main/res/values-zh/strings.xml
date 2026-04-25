@@ -49,11 +49,18 @@
     <string name="global_sidebar_title">全局侧边栏</string>
     <string name="global_sidebar_summary">点击管理侧边栏设置</string>
 
-    <string name="popup_view_notifs_title">通知打开 (beta)</string>
-    <string name="popup_view_notifs_summary">使用轻量小窗打开通知应用</string>
-
-    <string name="beta_force_relaunch_title">避免强制重载 (beta)</string>
-    <string name="beta_force_relaunch_summary">解决部分应用小窗打开后会重新加载的问题，但可能会导致应用异常</string>
+    <string name="popup_behavior_settings">小窗行为设置</string>
+    <string name="popup_notification_jump_portrait_title">通知 → 小窗（竖屏）</string>
+    <string name="popup_notification_jump_portrait_summary">竖屏模式下点击通知时以小窗打开应用。</string>
+    <string name="popup_notification_jump_landscape_title">通知 → 小窗（横屏）</string>
+    <string name="popup_notification_jump_landscape_summary">横屏模式下点击通知时以小窗打开应用。</string>
+    <string name="popup_notification_blacklist_title">通知黑名单</string>
+    <string name="popup_notification_blacklist_summary">管理无法以小窗视图打开通知的应用。</string>
+    <string name="popup_single_tap_action_title">单击动作</string>
+    <string name="popup_double_tap_action_title">双击动作</string>
+    <string name="popup_tap_action_pip">进入悬浮小窗</string>
+    <string name="popup_tap_action_exit">退出小窗</string>
+    <string name="popup_tap_action_none">无操作</string>
 
     <string-array name="app_launch_mode_entries">
         <item>@string/app_launch_mode_bubble</item>
@@ -63,6 +70,18 @@
     <string-array name="app_launch_mode_values">
         <item>bubble</item>
         <item>free_window</item>
+    </string-array>
+
+    <string-array name="popup_tap_action_entries">
+        <item>@string/popup_tap_action_pip</item>
+        <item>@string/popup_tap_action_exit</item>
+        <item>@string/popup_tap_action_none</item>
+    </string-array>
+
+    <string-array name="popup_tap_action_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
     </string-array>
 
 </resources>

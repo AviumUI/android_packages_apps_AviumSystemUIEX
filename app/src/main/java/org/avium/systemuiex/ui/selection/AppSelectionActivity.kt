@@ -45,6 +45,7 @@ class AppSelectionActivity : CollapsingToolbarBaseActivity() {
 
     private val appList = mutableListOf<AppInfo>()
     private val selectedApps = mutableListOf<String>()
+    private val blacklistedApps = mutableListOf<String>()
     private val maxSelectionCount = Config.MAX_ICONS - 1
 
     private lateinit var appListView: RecyclerView
@@ -52,15 +53,28 @@ class AppSelectionActivity : CollapsingToolbarBaseActivity() {
     private lateinit var adapter: AppSelectionAdapter
     private lateinit var touchHelper: ItemTouchHelper
 
+    private var mode: Int = MODE_SELECTION
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_app_selection)
-        title = getString(R.string.manage_apps)
+
+        mode = intent.getIntExtra(EXTRA_MODE, MODE_SELECTION)
+
+        title = if (mode == MODE_BLACKLIST) {
+            getString(R.string.popup_notification_blacklist_title)
+        } else {
+            getString(R.string.manage_apps)
+        }
 
         appListView = findViewById(R.id.app_list)
         loading = findViewById(R.id.loading)
 
-        selectedApps.addAll(PreferenceHelper.getSelectedApps(this))
+        if (mode == MODE_BLACKLIST) {
+            blacklistedApps.addAll(parseBlacklist(PreferenceHelper.getPopupNotificationBlacklist(this)))
+        } else {
+            selectedApps.addAll(PreferenceHelper.getSelectedApps(this))
+        }
 
         adapter = AppSelectionAdapter()
         appListView.layoutManager = LinearLayoutManager(this)
@@ -72,6 +86,15 @@ class AppSelectionActivity : CollapsingToolbarBaseActivity() {
         adapter.setItemTouchHelper(touchHelper)
 
         loadApps()
+    }
+
+    private fun parseBlacklist(blacklist: String): List<String> {
+        return if (blacklist.isEmpty()) emptyList() else blacklist.split(";")
+    }
+
+    private fun saveBlacklist() {
+        val blacklist = blacklistedApps.joinToString(";")
+        PreferenceHelper.setPopupNotificationBlacklist(this, blacklist)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -157,23 +180,44 @@ class AppSelectionActivity : CollapsingToolbarBaseActivity() {
 
         fun buildItems() {
             val newItems = ArrayList<UiItem>()
-            newItems.add(UiItem.header(R.string.selected_apps))
 
-            val selectedInfos = ArrayList<AppInfo>()
-            for (pkg in selectedApps) {
-                resolveAppInfo(pkg)?.let { selectedInfos.add(it) }
-            }
-            if (selectedInfos.isEmpty()) {
-                newItems.add(UiItem.empty(R.string.no_apps_selected))
+            if (mode == MODE_BLACKLIST) {
+                newItems.add(UiItem.header(R.string.selected_apps))
+
+                val blacklistedInfos = ArrayList<AppInfo>()
+                for (pkg in blacklistedApps) {
+                    resolveAppInfo(pkg)?.let { blacklistedInfos.add(it) }
+                }
+                if (blacklistedInfos.isEmpty()) {
+                    newItems.add(UiItem.empty(R.string.no_apps_selected))
+                } else {
+                    blacklistedInfos.forEach { newItems.add(UiItem.selected(it)) }
+                }
+
+                newItems.add(UiItem.header(R.string.all_apps))
+                val unselected = appList
+                    .filter { !blacklistedApps.contains(it.packageName) }
+                    .sortedBy { it.appName.lowercase() }
+                unselected.forEach { newItems.add(UiItem.all(it)) }
             } else {
-                selectedInfos.forEach { newItems.add(UiItem.selected(it)) }
-            }
+                newItems.add(UiItem.header(R.string.selected_apps))
 
-            newItems.add(UiItem.header(R.string.all_apps))
-            val unselected = appList
-                .filter { !selectedApps.contains(it.packageName) }
-                .sortedBy { it.appName.lowercase() }
-            unselected.forEach { newItems.add(UiItem.all(it)) }
+                val selectedInfos = ArrayList<AppInfo>()
+                for (pkg in selectedApps) {
+                    resolveAppInfo(pkg)?.let { selectedInfos.add(it) }
+                }
+                if (selectedInfos.isEmpty()) {
+                    newItems.add(UiItem.empty(R.string.no_apps_selected))
+                } else {
+                    selectedInfos.forEach { newItems.add(UiItem.selected(it)) }
+                }
+
+                newItems.add(UiItem.header(R.string.all_apps))
+                val unselected = appList
+                    .filter { !selectedApps.contains(it.packageName) }
+                    .sortedBy { it.appName.lowercase() }
+                unselected.forEach { newItems.add(UiItem.all(it)) }
+            }
 
             val diff = androidx.recyclerview.widget.DiffUtil.calculateDiff(
                 UiItemDiffCallback(items, newItems)
@@ -188,6 +232,7 @@ class AppSelectionActivity : CollapsingToolbarBaseActivity() {
         }
 
         override fun onItemMove(fromPosition: Int, toPosition: Int): Boolean {
+            if (mode == MODE_BLACKLIST) return false
             if (!isSelectedItem(fromPosition) || !isSelectedItem(toPosition)) {
                 return false
             }
@@ -261,7 +306,7 @@ class AppSelectionActivity : CollapsingToolbarBaseActivity() {
                 pkg.text = app.packageName
                 check.setOnCheckedChangeListener(null)
                 check.isChecked = item.isSelectedSection
-                dragHandle.visibility = if (item.isSelectedSection) View.VISIBLE else View.INVISIBLE
+                dragHandle.visibility = if (item.isSelectedSection && mode != MODE_BLACKLIST) View.VISIBLE else View.INVISIBLE
 
                 check.setOnCheckedChangeListener { _, isChecked ->
                     handleToggle(app, isChecked)
@@ -271,7 +316,7 @@ class AppSelectionActivity : CollapsingToolbarBaseActivity() {
                 }
 
                 dragHandle.setOnTouchListener { _, event ->
-                    if (event.action == MotionEvent.ACTION_DOWN && item.isSelectedSection) {
+                    if (event.action == MotionEvent.ACTION_DOWN && item.isSelectedSection && mode != MODE_BLACKLIST) {
                         itemTouchHelper?.startDrag(this)
                         return@setOnTouchListener true
                     }
@@ -281,19 +326,30 @@ class AppSelectionActivity : CollapsingToolbarBaseActivity() {
         }
 
         private fun handleToggle(app: AppInfo, checked: Boolean) {
-            if (checked) {
-                if (selectedApps.size >= maxSelectionCount) {
-                    val msg = getString(R.string.selection_limit_toast, maxSelectionCount)
-                    Toast.makeText(this@AppSelectionActivity, msg, Toast.LENGTH_SHORT).show()
-                    return
+            if (mode == MODE_BLACKLIST) {
+                if (checked) {
+                    if (!blacklistedApps.contains(app.packageName)) {
+                        blacklistedApps.add(app.packageName)
+                    }
+                } else {
+                    blacklistedApps.remove(app.packageName)
                 }
-                if (!selectedApps.contains(app.packageName)) {
-                    selectedApps.add(app.packageName)
-                }
+                saveBlacklist()
             } else {
-                selectedApps.remove(app.packageName)
+                if (checked) {
+                    if (selectedApps.size >= maxSelectionCount) {
+                        val msg = getString(R.string.selection_limit_toast, maxSelectionCount)
+                        Toast.makeText(this@AppSelectionActivity, msg, Toast.LENGTH_SHORT).show()
+                        return
+                    }
+                    if (!selectedApps.contains(app.packageName)) {
+                        selectedApps.add(app.packageName)
+                    }
+                } else {
+                    selectedApps.remove(app.packageName)
+                }
+                PreferenceHelper.saveSelectedApps(this@AppSelectionActivity, selectedApps)
             }
-            PreferenceHelper.saveSelectedApps(this@AppSelectionActivity, selectedApps)
             buildItems()
         }
     }
@@ -371,5 +427,11 @@ class AppSelectionActivity : CollapsingToolbarBaseActivity() {
         override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
             return oldItems[oldItemPosition] == newItems[newItemPosition]
         }
+    }
+
+    companion object {
+        const val EXTRA_MODE = "extra_mode"
+        const val MODE_SELECTION = 0
+        const val MODE_BLACKLIST = 1
     }
 }
