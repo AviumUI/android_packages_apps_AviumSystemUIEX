@@ -52,11 +52,18 @@
     <string name="global_sidebar_title">Global Sidebar Management</string>
     <string name="global_sidebar_summary">Manage Freeform sidebar settings</string>
 
-    <string name="popup_view_notifs_title">Open Notifications in Popup(beta)</string>
-    <string name="popup_view_notifs_summary">Use popup window to open notification apps</string>
-
-    <string name="beta_force_relaunch_title">Prevent force Relaunch(beta)</string>
-    <string name="beta_force_relaunch_summary">When apps re-open in Pop-Up view, prevent them reload. This may cause abnormal behavior of apps.</string>
+    <string name="popup_behavior_settings">Pop-Up Behavior Settings</string>
+    <string name="popup_notification_jump_portrait_title">Notification → Pop-Up (Portrait)</string>
+    <string name="popup_notification_jump_portrait_summary">Open apps in Pop-Up when tapping notifications in portrait orientation.</string>
+    <string name="popup_notification_jump_landscape_title">Notification → Pop-Up (Landscape)</string>
+    <string name="popup_notification_jump_landscape_summary">Open apps in Pop-Up when tapping notifications in landscape orientation.</string>
+    <string name="popup_notification_blacklist_title">Notification Blacklist</string>
+    <string name="popup_notification_blacklist_summary">Manage apps that cannot open notifications in Pop-Up view.</string>
+    <string name="popup_single_tap_action_title">Single Tap Action</string>
+    <string name="popup_double_tap_action_title">Double Tap Action</string>
+    <string name="popup_tap_action_pip">Enter Pinned-Window</string>
+    <string name="popup_tap_action_exit">Exit Pop-Up</string>
+    <string name="popup_tap_action_none">No Action</string>
 
     <string-array name="app_launch_mode_entries">
         <item>@string/app_launch_mode_bubble</item>
@@ -66,6 +73,18 @@
     <string-array name="app_launch_mode_values">
         <item>bubble</item>
         <item>free_window</item>
+    </string-array>
+
+    <string-array name="popup_tap_action_entries">
+        <item>@string/popup_tap_action_pip</item>
+        <item>@string/popup_tap_action_exit</item>
+        <item>@string/popup_tap_action_none</item>
+    </string-array>
+
+    <string-array name="popup_tap_action_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
     </string-array>
 
 </resources>

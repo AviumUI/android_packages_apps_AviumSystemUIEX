@@ -36,6 +36,43 @@
             android:summary="@string/global_sidebar_summary" />
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="@string/popup_behavior_settings">
+
+        <SwitchPreferenceCompat
+            android:key="popup_notification_jump_portrait"
+            android:title="@string/popup_notification_jump_portrait_title"
+            android:summary="@string/popup_notification_jump_portrait_summary"
+            android:defaultValue="false" />
+
+        <SwitchPreferenceCompat
+            android:key="popup_notification_jump_landscape"
+            android:title="@string/popup_notification_jump_landscape_title"
+            android:summary="@string/popup_notification_jump_landscape_summary"
+            android:defaultValue="false" />
+
+        <Preference
+            android:key="popup_notification_blacklist"
+            android:title="@string/popup_notification_blacklist_title"
+            android:summary="@string/popup_notification_blacklist_summary" />
+
+        <ListPreference
+            android:key="popup_single_tap_action"
+            android:title="@string/popup_single_tap_action_title"
+            android:summary="%s"
+            android:entries="@array/popup_tap_action_entries"
+            android:entryValues="@array/popup_tap_action_values"
+            android:defaultValue="1" />
+
+        <ListPreference
+            android:key="popup_double_tap_action"
+            android:title="@string/popup_double_tap_action_title"
+            android:summary="%s"
+            android:entries="@array/popup_tap_action_entries"
+            android:entryValues="@array/popup_tap_action_values"
+            android:defaultValue="2" />
+
+    </PreferenceCategory>
+
     <PreferenceCategory android:title="@string/gesture_settings">
 
         <SwitchPreferenceCompat
@@ -57,18 +94,6 @@
             android:entries="@array/app_launch_mode_entries"
             android:entryValues="@array/app_launch_mode_values"
             android:defaultValue="bubble" />
-
-        <SwitchPreferenceCompat
-            android:key="popup_view_notifs"
-            android:title="@string/popup_view_notifs_title"
-            android:summary="@string/popup_view_notifs_summary"
-            android:defaultValue="false" />
-
-        <SwitchPreferenceCompat
-            android:key="beta_force_relaunch"
-            android:title="@string/beta_force_relaunch_title"
-            android:summary="@string/beta_force_relaunch_summary"
-            android:defaultValue="false" />
 
         <com.android.settingslib.widget.FooterPreference
             android:key="gesture_area_warning"
