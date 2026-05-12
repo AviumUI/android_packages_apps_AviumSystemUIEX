@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2025 The AviumUI Project
+ * Copyright (C) 2025-2026 The AviumUI Project
  *
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -57,10 +57,6 @@ object OverlayManager {
 
         val selectedApps = PreferenceHelper.getSelectedApps(context)
         
-        if (selectedApps.isEmpty()) {
-            return
-        }
-
         overlayView = if (isLeft) {
             LeftAppCircleViewGroup(context)
         } else {
