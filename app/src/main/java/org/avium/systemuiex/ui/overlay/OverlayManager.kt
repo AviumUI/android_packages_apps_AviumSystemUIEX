@@ -57,10 +57,6 @@ object OverlayManager {
 
         val selectedApps = PreferenceHelper.getSelectedApps(context)
         
-        if (selectedApps.isEmpty()) {
-            return
-        }
-
         overlayView = if (isLeft) {
             LeftAppCircleViewGroup(context)
         } else {
