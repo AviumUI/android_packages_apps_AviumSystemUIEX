@@ -55,6 +55,34 @@ class AppSelectionActivity : CollapsingToolbarBaseActivity() {
 
     private var mode: Int = MODE_SELECTION
 
+    private var loadingJob: kotlinx.coroutines.Job? = null
+    private val profileReceiver = object : android.content.BroadcastReceiver() {
+        override fun onReceive(context: android.content.Context, intent: android.content.Intent) {
+            loadApps()
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        registerReceiver(profileReceiver, android.content.IntentFilter().apply {
+            addAction(android.content.Intent.ACTION_PROFILE_AVAILABLE)
+            addAction(android.content.Intent.ACTION_PROFILE_ACCESSIBLE)
+            addAction(android.content.Intent.ACTION_PROFILE_INACCESSIBLE)
+            addAction(android.content.Intent.ACTION_PROFILE_ADDED)
+            addAction(android.content.Intent.ACTION_PROFILE_REMOVED)
+            addAction(android.content.Intent.ACTION_PROFILE_UNAVAILABLE)
+            addAction(android.content.Intent.ACTION_MANAGED_PROFILE_AVAILABLE)
+            addAction(android.content.Intent.ACTION_MANAGED_PROFILE_UNAVAILABLE)
+        }, RECEIVER_EXPORTED)
+        loadApps()
+    }
+
+    override fun onStop() {
+        unregisterReceiver(profileReceiver)
+        loadingJob?.cancel()
+        super.onStop()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_app_selection)
@@ -85,7 +113,6 @@ class AppSelectionActivity : CollapsingToolbarBaseActivity() {
         touchHelper.attachToRecyclerView(appListView)
         adapter.setItemTouchHelper(touchHelper)
 
-        loadApps()
     }
 
     private fun parseBlacklist(blacklist: String): List<String> {
@@ -110,7 +137,8 @@ class AppSelectionActivity : CollapsingToolbarBaseActivity() {
     private fun loadApps() {
         loading.visibility = View.VISIBLE
         appListView.visibility = View.GONE
-        lifecycleScope.launch {
+        loadingJob?.cancel()
+        loadingJob = lifecycleScope.launch {
             val loaded = AppListProvider.getLaunchableApps(this@AppSelectionActivity)
             appList.clear()
             appList.addAll(loaded)
@@ -121,19 +149,7 @@ class AppSelectionActivity : CollapsingToolbarBaseActivity() {
     }
 
     private fun rebuildItems() {
-        val pm = packageManager
-        val validSelected = ArrayList<String>()
-        for (pkg in selectedApps) {
-            try {
-                pm.getApplicationInfo(pkg, 0)
-                validSelected.add(pkg)
-            } catch (_: PackageManager.NameNotFoundException) {
-                // Drop uninstalled apps
-            }
-        }
-        if (validSelected != selectedApps) {
-            selectedApps.clear()
-            selectedApps.addAll(validSelected)
+        if (selectedApps.removeAll { !AppListProvider.keepSelection(this, it) }) {
             PreferenceHelper.saveSelectedApps(this, selectedApps)
         }
         adapter.buildItems()
@@ -197,6 +213,7 @@ class AppSelectionActivity : CollapsingToolbarBaseActivity() {
                 newItems.add(UiItem.header(R.string.all_apps))
                 val unselected = appList
                     .filter { !blacklistedApps.contains(it.packageName) }
+                    .distinctBy { it.packageName }
                     .sortedBy { it.appName.lowercase() }
                 unselected.forEach { newItems.add(UiItem.all(it)) }
             } else {
@@ -214,7 +231,7 @@ class AppSelectionActivity : CollapsingToolbarBaseActivity() {
 
                 newItems.add(UiItem.header(R.string.all_apps))
                 val unselected = appList
-                    .filter { !selectedApps.contains(it.packageName) }
+                    .filter { !selectedApps.contains(it.selectionKey) }
                     .sortedBy { it.appName.lowercase() }
                 unselected.forEach { newItems.add(UiItem.all(it)) }
             }
@@ -241,7 +258,7 @@ class AppSelectionActivity : CollapsingToolbarBaseActivity() {
             if (fromIndex < 0 || toIndex < 0) return false
 
             val pkg = selectedApps.removeAt(fromIndex)
-            val insertIndex = if (toIndex > fromIndex) toIndex - 1 else toIndex
+            val insertIndex = toIndex
             selectedApps.add(insertIndex, pkg)
 
             val moved = items.removeAt(fromPosition)
@@ -252,25 +269,15 @@ class AppSelectionActivity : CollapsingToolbarBaseActivity() {
         }
 
         private fun selectedIndexForAdapterPos(position: Int): Int {
-            var idx = 0
-            for (i in items.indices) {
-                val item = items[i]
-                if (item.isSelectedSection) {
-                    if (i == position) return idx
-                    idx++
-                }
-            }
-            return -1
+            val key = items.getOrNull(position)?.app?.selectionKey ?: return -1
+            return selectedApps.indexOf(key)
         }
 
         private fun resolveAppInfo(packageName: String): AppInfo? {
-            return try {
-                val appInfo = pm.getApplicationInfo(packageName, 0)
-                val label = pm.getApplicationLabel(appInfo).toString()
-                AppInfo(label, packageName, pm.getApplicationIcon(appInfo), true)
-            } catch (_: Exception) {
-                null
+            if (mode == MODE_BLACKLIST) {
+                return appList.firstOrNull { it.packageName == packageName }
             }
+            return AppListProvider.resolveApp(this@AppSelectionActivity, packageName)
         }
 
         private inner class HeaderViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -342,11 +349,11 @@ class AppSelectionActivity : CollapsingToolbarBaseActivity() {
                         Toast.makeText(this@AppSelectionActivity, msg, Toast.LENGTH_SHORT).show()
                         return
                     }
-                    if (!selectedApps.contains(app.packageName)) {
-                        selectedApps.add(app.packageName)
+                    if (!selectedApps.contains(app.selectionKey)) {
+                        selectedApps.add(app.selectionKey)
                     }
                 } else {
-                    selectedApps.remove(app.packageName)
+                    selectedApps.remove(app.selectionKey)
                 }
                 PreferenceHelper.saveSelectedApps(this@AppSelectionActivity, selectedApps)
             }
@@ -418,7 +425,7 @@ class AppSelectionActivity : CollapsingToolbarBaseActivity() {
             val newItem = newItems[newItemPosition]
             if (oldItem.type != newItem.type) return false
             return when (oldItem.type) {
-                UiItem.TYPE_APP -> oldItem.app?.packageName == newItem.app?.packageName
+                UiItem.TYPE_APP -> oldItem.app?.selectionKey == newItem.app?.selectionKey
                 UiItem.TYPE_HEADER, UiItem.TYPE_EMPTY -> oldItem.titleRes == newItem.titleRes
                 else -> false
             }

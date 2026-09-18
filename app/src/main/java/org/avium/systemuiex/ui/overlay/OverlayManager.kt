@@ -47,6 +47,13 @@ object OverlayManager {
     private val touchCoordinatesQueue = ConcurrentLinkedQueue<Triple<Float, Float, Boolean>>()
     private var isGestureActive = false
 
+    private var receiverContext: Context? = null
+    private val profileReceiver = object : android.content.BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            hide()
+        }
+    }
+
     fun show(context: Context, isLeft: Boolean, initialTouchX: Float = -1f, initialTouchY: Float = -1f) {
 
         this.context = context
@@ -61,18 +68,29 @@ object OverlayManager {
             return
         }
 
+        receiverContext = context.applicationContext.also {
+            it.registerReceiver(profileReceiver, android.content.IntentFilter().apply {
+                addAction(Intent.ACTION_PROFILE_UNAVAILABLE)
+                addAction(Intent.ACTION_PROFILE_INACCESSIBLE)
+                addAction(Intent.ACTION_PROFILE_REMOVED)
+                addAction(Intent.ACTION_MANAGED_PROFILE_UNAVAILABLE)
+            }, Context.RECEIVER_EXPORTED)
+        }
+
         overlayView = if (isLeft) {
             LeftAppCircleViewGroup(context)
         } else {
             RightAppCircleViewGroup(context)
         }
 
-        val pm = context.packageManager
+        val visibleApps = mutableListOf<String>()
 
         selectedApps.take(org.avium.systemuiex.util.Config.MAX_ICONS - 1).forEach { packageName ->
             try {
-                val appInfo = pm.getApplicationInfo(packageName, 0)
-                val icon = appInfo.loadIcon(pm)
+                val appInfo = org.avium.systemuiex.util.AppListProvider.resolveApp(context, packageName)
+                    ?: return@forEach
+                val icon = appInfo.icon
+                visibleApps.add(packageName)
                 val imageView = ImageView(context).apply {
                     setImageDrawable(icon)
                 }
@@ -89,7 +107,7 @@ object OverlayManager {
 
         overlayView?.let { 
             it.setOnIconLaunchListener { index ->
-                val apps = PreferenceHelper.getSelectedApps(context).take(org.avium.systemuiex.util.Config.MAX_ICONS - 1)
+                val apps = visibleApps
                 if (index < apps.size) {
                     org.avium.systemuiex.util.AppLauncher.launchApp(context, apps[index])
                 } else {
@@ -125,6 +143,8 @@ object OverlayManager {
     }
 
     fun hide() {
+        receiverContext?.unregisterReceiver(profileReceiver)
+        receiverContext = null
         overlayView?.let {
             try {
                 val ctx = context ?: it.context
