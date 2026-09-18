@@ -87,4 +87,31 @@
         <item>2</item>
     </string-array>
 
+
+    <string name="profile_main">Main space</string>
+    <string name="profile_clone">Cloned apps</string>
+    <string name="profile_private">Private space</string>
+    <string name="profile_launch_title">Open in a window</string>
+    <string name="profile_no_apps">No available apps in this space. Unlock or enable the space to view its apps.</string>
+
+    <string name="app_launch_request">%1$s wants to open %2$s</string>
+    <string name="app_launch_allow_once">Allow once</string>
+    <string name="app_launch_allow_always">Always allow</string>
+    <string name="app_launch_deny">Deny</string>
+    <string name="app_launch_choose_space">Choose which space to open %1$s in</string>
+    <string name="app_launch_save_failed">Could not save the permission. Allowing this request once.</string>
+    <string name="private_space_unlock">Unlock private space</string>
+    <string name="private_space_create">Create private space</string>
+    <string name="private_space_settings_hint">Open Private space in system security settings to create it.</string>
+    <string name="profile_picker_close">Close app picker</string>
+    <string name="private_space_locked_description">Unlock to view private apps. Authentication is handled by the system.</string>
+    <string name="private_space_create_description">Create a separate space for private apps in system settings.</string>
+    <string name="profile_jump_letter">Jump to %1$s</string>
+    <string name="profile_add_shortcut">Tap to add</string>
+    <string name="profile_remove_shortcut">Tap to remove</string>
+    <string name="app_search_hint">Search apps</string>
+    <string name="app_search_no_results">No matching apps</string>
+    <string name="private_space_unlock_failed">Unable to unlock private space. Please try again.</string>
+    <string name="private_space_lock">Lock</string>
+    <string name="private_space_lock_failed">Unable to lock private space. Please try again.</string>
 </resources>

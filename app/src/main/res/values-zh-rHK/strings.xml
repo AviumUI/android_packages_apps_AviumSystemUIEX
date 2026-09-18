@@ -57,4 +57,10 @@
     <string name="popup_view_notifs_summary">使用輕量小窗開啟通知應用</string>
     <string name="beta_force_relaunch_title">避免強制重新載入 (beta)</string>
     <string name="beta_force_relaunch_summary">解決部分應用以小窗開啟後會重新載入的問題，但可能會導致應用異常</string>
+    <string name="app_search_hint">搜尋應用程式</string>
+    <string name="app_search_no_results">沒有相符的應用程式</string>
+    <string name="private_space_unlock_failed">無法解鎖私人空間，請重試。</string>
+    <string name="private_space_settings_hint">請在系統安全設定中開啟「私人空間」完成建立。</string>
+    <string name="private_space_lock">鎖定</string>
+    <string name="private_space_lock_failed">無法鎖定私人空間，請重試。</string>
 </resources>

@@ -1,9 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:focusableInTouchMode="true"
+    android:orientation="vertical"
     android:id="@+id/app_selection_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="12dp"
+        android:theme="@style/Theme.SystemUIEX.Material3"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+        android:hint="@string/app_search_hint"
+        app:boxBackgroundMode="outline"
+        app:boxCornerRadiusTopStart="28dp"
+        app:boxCornerRadiusTopEnd="28dp"
+        app:boxCornerRadiusBottomStart="28dp"
+        app:boxCornerRadiusBottomEnd="28dp"
+        app:startIconDrawable="@drawable/ic_search_black_24"
+        app:endIconMode="clear_text">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/app_search"
+            style="@style/Widget.Material3.TextInputEditText.OutlinedBox"
+            android:background="@null"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="56dp"
+            android:singleLine="true"
+            android:inputType="text"
+            android:imeOptions="actionDone" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fillViewport="true">
+        <FrameLayout
+            android:id="@+id/profile_tabs"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp" />
+    </HorizontalScrollView>
+
+    <FrameLayout
+        android:id="@+id/private_space_action"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:visibility="gone" />
+
+    <FrameLayout android:layout_width="match_parent"
+        android:layout_height="0dp" android:layout_weight="1">
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/app_list"
         android:layout_width="match_parent"
@@ -21,4 +73,5 @@
         android:layout_gravity="center"
         android:visibility="gone" />
 
-</FrameLayout>
+    </FrameLayout>
+</LinearLayout>

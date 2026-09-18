@@ -21,55 +21,65 @@
 
 package org.avium.systemuiex.util
 
+import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
-import android.app.ActivityOptions
 import android.widget.Toast
 import org.avium.systemuiex.R
 
 object AppLauncher {
 
-    /*
-    fun launchApp(context: Context, packageName: String) {
-        val intent = context.packageManager.getLaunchIntentForPackage(packageName)
-        if (intent != null) {
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            context.startActivity(intent)
-        } else {
+    fun launchApp(context: Context, selection: String) {
+        val user =
+            AppListProvider.resolveUser(context, selection) ?: return showLaunchFailToast(context)
+        val packageName = selection.substringAfter(':')
+        val useBubbleMode = PreferenceHelper.getPopupViewMode(context, true)
+
+        try {
+            if (useBubbleMode) {
+                val intent = Intent("org.avium.LAUNCH_BUBBLE")
+                intent.putExtra("package_name", packageName)
+                intent.putExtra(Intent.EXTRA_USER_HANDLE, user.identifier)
+                intent.setPackage("com.android.systemui")
+                intent.addFlags(Intent.FLAG_RECEIVER_INCLUDE_BACKGROUND)
+                context.sendBroadcast(intent)
+            } else {
+                launchAppNormally(context, packageName, user)
+            }
+        } catch (_: SecurityException) {
+            showLaunchFailToast(context)
+        } catch (_: android.content.ActivityNotFoundException) {
+            showLaunchFailToast(context)
+        } catch (_: IllegalStateException) {
             showLaunchFailToast(context)
         }
     }
-    */
 
-    fun launchApp(context: Context, packageName: String) {
-        val useBubbleMode = PreferenceHelper.getPopupViewMode(context, true)
-        
-        if (useBubbleMode) {
-            val intent = Intent("org.avium.LAUNCH_BUBBLE")
-            intent.putExtra("package_name", packageName)
-            intent.addFlags(Intent.FLAG_RECEIVER_INCLUDE_BACKGROUND)
-            context.sendBroadcast(intent)
-        } else {
-            launchAppNormally(context, packageName)
-        }
-    }
+    private fun launchAppNormally(
+        context: Context,
+        packageName: String,
+        user: android.os.UserHandle,
+    ) {
+        val launcher = context.getSystemService(android.content.pm.LauncherApps::class.java)
+        val activity = launcher.getActivityList(packageName, user).firstOrNull()
+        if (activity != null) {
 
-    private fun launchAppNormally(context: Context, packageName: String) {
-        val intent = context.packageManager.getLaunchIntentForPackage(packageName)
-        if (intent != null) {
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            val miniWindowOptions =
+                ActivityOptions.makeBasic().apply { setLaunchWindowingMode(102) }
 
-            val miniWindowOptions = ActivityOptions.makeBasic().apply {
-                setLaunchWindowingMode(102)
-            }
-
-            context.startActivity(intent, miniWindowOptions.toBundle())
+            launcher.startMainActivity(
+                activity.componentName,
+                user,
+                null,
+                miniWindowOptions.toBundle(),
+            )
         } else {
             showLaunchFailToast(context)
         }
     }
 
     private fun showLaunchFailToast(context: Context) {
-        Toast.makeText(context, context.getString(R.string.cannot_launch_app), Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, context.getString(R.string.cannot_launch_app), Toast.LENGTH_SHORT)
+            .show()
     }
 }
