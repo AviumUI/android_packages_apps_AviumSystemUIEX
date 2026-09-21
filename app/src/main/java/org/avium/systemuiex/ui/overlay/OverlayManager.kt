@@ -64,9 +64,8 @@ object OverlayManager {
 
         val selectedApps = PreferenceHelper.getSelectedApps(context)
         
-        if (selectedApps.isEmpty()) {
-            return
-        }
+        // Keep the more-apps entry available even before shortcuts are selected,
+        // or after stale/profile shortcuts have been removed by the picker.
 
         receiverContext = context.applicationContext.also {
             it.registerReceiver(profileReceiver, android.content.IntentFilter().apply {
@@ -96,7 +95,7 @@ object OverlayManager {
                 }
                 overlayView?.addView(imageView)
             } catch (e: Exception) {
-                //do nothing
+                Log.w(TAG, "Unable to load gesture shortcut", e)
             }
         }
 
@@ -144,7 +143,8 @@ object OverlayManager {
                     }
                 }
             } catch (e: Exception) {
-                overlayView = null
+                Log.e(TAG, "Unable to show gesture overlay", e)
+                hide()
             }
         }
     }

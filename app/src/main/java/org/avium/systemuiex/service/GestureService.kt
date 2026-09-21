@@ -60,7 +60,7 @@ class GestureService : Service() {
             try {
                 pendingIntent.send()
             } catch (e: Exception) {
-                //do nothing
+                android.util.Log.e("GestureService", "Unable to start gesture service", e)
             }
         }
     }
@@ -97,8 +97,8 @@ class GestureService : Service() {
         }
 
         val isLeft = intent.getBooleanExtra("isLeft", true)
-        val touchX = intent.getFloatExtra("touchX", -1f)
-        val touchY = intent.getFloatExtra("touchY", -1f)
+        val touchX = intent.getFloatExtra("touchX", intent.getFloatExtra("startX", -1f))
+        val touchY = intent.getFloatExtra("touchY", intent.getFloatExtra("startY", -1f))
 
         val notification = createNotification()
         startForeground(NOTIFICATION_ID, notification)
