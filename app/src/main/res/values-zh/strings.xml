@@ -84,4 +84,31 @@
         <item>2</item>
     </string-array>
 
+
+    <string name="profile_main">主空间</string>
+    <string name="profile_clone">应用分身</string>
+    <string name="profile_private">隐私空间</string>
+    <string name="profile_launch_title">以小窗打开</string>
+    <string name="profile_no_apps">此空间暂无可用应用，请先解锁或启用该空间。</string>
+
+    <string name="app_launch_request">%1$s 想要打开 %2$s</string>
+    <string name="app_launch_allow_once">本次允许</string>
+    <string name="app_launch_allow_always">始终允许</string>
+    <string name="app_launch_deny">拒绝</string>
+    <string name="app_launch_choose_space">选择使用哪个空间的 %1$s</string>
+    <string name="app_launch_save_failed">无法保存始终允许规则，已按本次允许执行。</string>
+    <string name="private_space_unlock">解锁隐私空间</string>
+    <string name="private_space_create">创建隐私空间</string>
+    <string name="private_space_settings_hint">请在系统安全设置中打开“隐私空间”完成创建。</string>
+    <string name="profile_picker_close">关闭应用选择窗</string>
+    <string name="private_space_locked_description">解锁后显示隐私应用，由系统验证身份。</string>
+    <string name="private_space_create_description">前往系统设置，创建独立的隐私应用空间。</string>
+    <string name="profile_jump_letter">跳到 %1$s</string>
+    <string name="profile_add_shortcut">点按添加</string>
+    <string name="profile_remove_shortcut">点按移除</string>
+    <string name="app_search_hint">搜索应用</string>
+    <string name="app_search_no_results">没有匹配的应用</string>
+    <string name="private_space_unlock_failed">无法解锁隐私空间，请重试。</string>
+    <string name="private_space_lock">锁定</string>
+    <string name="private_space_lock_failed">无法锁定隐私空间，请重试。</string>
 </resources>

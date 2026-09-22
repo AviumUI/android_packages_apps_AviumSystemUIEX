@@ -28,5 +28,11 @@ data class AppInfo(
     val appName: String,
     val packageName: String,
     val icon: Drawable,
-    var isSelected: Boolean = false
-)
+    var isSelected: Boolean = false,
+    val selectionKey: String = packageName,
+    val profileType: String = android.os.UserManager.USER_TYPE_FULL_SYSTEM,
+    val sortKey: String = appName
+) {
+    val initial: String
+        get() = sortKey.firstOrNull()?.uppercaseChar()?.takeIf { it in 'A'..'Z' }?.toString() ?: "#"
+}

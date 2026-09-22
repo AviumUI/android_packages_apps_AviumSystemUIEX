@@ -3,4 +3,22 @@
     <style name="Theme.SystemUIEX" parent="android:Theme.Material.Light.NoActionBar" />
     <style name="Theme.SystemUIEX.Settings" parent="Theme.SubSettingsBase" />
     <style name="Theme.SystemUIEX.Material" parent="Theme.MaterialComponents.DayNight.NoActionBar" />
+    <style name="Theme.SystemUIEX.FloatingPicker" parent="Theme.SubSettingsBase.Expressive">
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowCloseOnTouchOutside">true</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:backgroundDimAmount">0.25</item>
+        <item name="android:windowMinWidthMajor">0dp</item>
+        <item name="android:windowMinWidthMinor">0dp</item>
+    </style>
+    <style name="Theme.SystemUIEX.Material3" parent="Theme.Material3.DayNight.NoActionBar" />
+    <style name="Theme.SystemUIEX.Approval" parent="Theme.SystemUIEX.Material3">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+    <style name="Theme.SystemUIEX.Material3Expressive" parent="Theme.Material3Expressive.DayNight.NoActionBar" />
 </resources>

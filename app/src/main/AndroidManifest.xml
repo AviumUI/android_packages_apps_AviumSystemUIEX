@@ -14,6 +14,13 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS_FULL" />
 
+    <uses-permission android:name="android.permission.ACCESS_HIDDEN_PROFILES_FULL" />
+
+    <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
+    <uses-permission android:name="android.permission.QUERY_USERS" />
+
+    <uses-permission android:name="android.permission.MODIFY_QUIET_MODE" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -23,6 +30,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.SystemUIEX">
+        <activity android:name=".ui.selection.AppLaunchPickerActivity"
+            android:exported="true" android:excludeFromRecents="true"
+            android:theme="@style/Theme.SystemUIEX.FloatingPicker" />
+
+        <activity android:name=".ui.selection.AppLaunchApprovalActivity"
+            android:exported="false" android:excludeFromRecents="true"
+            android:theme="@style/Theme.SystemUIEX.Approval" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
