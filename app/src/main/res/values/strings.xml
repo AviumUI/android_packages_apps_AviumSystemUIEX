@@ -89,6 +89,7 @@
 
 
     <string name="profile_main">Main space</string>
+    <string name="profile_work">Work profile</string>
     <string name="profile_clone">Cloned apps</string>
     <string name="profile_private">Private space</string>
     <string name="profile_launch_title">Open in a window</string>

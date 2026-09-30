@@ -86,6 +86,7 @@
 
 
     <string name="profile_main">主空间</string>
+    <string name="profile_work">工作资料</string>
     <string name="profile_clone">应用分身</string>
     <string name="profile_private">隐私空间</string>
     <string name="profile_launch_title">以小窗打开</string>
