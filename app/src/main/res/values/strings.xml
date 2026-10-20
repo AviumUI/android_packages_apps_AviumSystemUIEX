@@ -101,6 +101,7 @@
     <string name="app_launch_deny">Deny</string>
     <string name="app_launch_choose_space">Choose which space to open %1$s in</string>
     <string name="app_launch_save_failed">Could not save the permission. Allowing this request once.</string>
+    <string name="app_launch_expired">This request expired or the app is no longer available. Try opening it again.</string>
     <string name="private_space_unlock">Unlock private space</string>
     <string name="private_space_create">Create private space</string>
     <string name="private_space_settings_hint">Open Private space in system security settings to create it.</string>

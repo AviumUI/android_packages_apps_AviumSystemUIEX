@@ -98,6 +98,7 @@
     <string name="app_launch_deny">拒绝</string>
     <string name="app_launch_choose_space">选择使用哪个空间的 %1$s</string>
     <string name="app_launch_save_failed">无法保存始终允许规则，已按本次允许执行。</string>
+    <string name="app_launch_expired">请求已过期或应用已不可用，请重新打开。</string>
     <string name="private_space_unlock">解锁隐私空间</string>
     <string name="private_space_create">创建隐私空间</string>
     <string name="private_space_settings_hint">请在系统安全设置中打开“隐私空间”完成创建。</string>

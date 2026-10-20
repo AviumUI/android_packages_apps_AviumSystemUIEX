@@ -858,29 +858,50 @@ open class AppSelectionActivity : CollapsingToolbarBaseActivity() {
 
 /** The system server owns the launch capabilities; this activity only returns the user decision. */
 class AppLaunchApprovalActivity : android.app.Activity() {
+    // Keep the one-shot decision and its in-flight response across Activity recreation.
+    private class ApprovalRequest {
+        var reply: android.os.RemoteCallback? = null
+        var replied = false
+        var selection = -1
+        var result: Bundle? = null
+        var activity: AppLaunchApprovalActivity? = null
+    }
+
+    private lateinit var request: ApprovalRequest
+    private var activeDialog: androidx.appcompat.app.AlertDialog? = null
+    private val replied: Boolean get() = ::request.isInitialized && request.replied
+
     private val availabilityReceiver = object : android.content.BroadcastReceiver() {
         override fun onReceive(context: android.content.Context, intent: android.content.Intent) {
-            respond(-1, 0)
+            val user = intent.getParcelableExtra(android.content.Intent.EXTRA_USER,
+                android.os.UserHandle::class.java) ?: return
+            val candidates = this@AppLaunchApprovalActivity.intent.getIntArrayExtra("spaceUserIds")
+                ?: return
+            val selectedUser = candidates.getOrNull(request.selection)
+            if (user.identifier == selectedUser
+                || selectedUser == null && candidates.contains(user.identifier)) {
+                respond(-1, 0)
+            }
         }
     }
 
     override fun onStart() {
         super.onStart()
+        request.activity = this
         registerReceiver(availabilityReceiver, android.content.IntentFilter().apply {
             addAction(android.content.Intent.ACTION_PROFILE_UNAVAILABLE)
             addAction(android.content.Intent.ACTION_PROFILE_INACCESSIBLE)
             addAction(android.content.Intent.ACTION_PROFILE_REMOVED)
         }, RECEIVER_EXPORTED)
+        deliverResponse()
     }
 
     override fun onStop() {
         unregisterReceiver(availabilityReceiver)
+        if (request.activity === this) request.activity = null
         if (!isChangingConfigurations && !replied) respond(-1, 0)
         super.onStop()
     }
-
-    private var reply: android.os.RemoteCallback? = null
-    private var replied = false
 
     private fun targetIcon(userId: Int? = null): android.graphics.drawable.Drawable? {
         val packageName = intent.getStringExtra("targetPackage") ?: return null
@@ -904,10 +925,15 @@ class AppLaunchApprovalActivity : android.app.Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        request = (lastNonConfigurationInstance as? ApprovalRequest) ?: ApprovalRequest().apply {
+            reply = intent.getParcelableExtra("callback", android.os.RemoteCallback::class.java)
+            selection = savedInstanceState?.getInt("selection", -1) ?: -1
+        }
         window.addSystemFlags(android.view.WindowManager.LayoutParams.SYSTEM_FLAG_HIDE_NON_SYSTEM_OVERLAY_WINDOWS)
-        reply = intent.getParcelableExtra("callback", android.os.RemoteCallback::class.java)
         val labels = intent.getStringArrayExtra("labels")?.copyOf()
-        if (reply == null || labels.isNullOrEmpty()) {
+        if (request.reply == null || labels.isNullOrEmpty()
+            || lastNonConfigurationInstance == null
+                && savedInstanceState?.getBoolean("replied", false) == true) {
             finish()
             return
         }
@@ -922,8 +948,11 @@ class AppLaunchApprovalActivity : android.app.Activity() {
             labels[index] = "${getString(label)} · ${labels[index]}"
         }
         val remembered = intent.getBooleanArrayExtra("remembered")
-        if (labels.size > 1) {
-            com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+        if (replied) return // onStart will receive/deliver the retained response.
+        if (request.selection in labels.indices) {
+            showApproval(request.selection, labels[request.selection])
+        } else if (labels.size > 1) {
+            activeDialog = com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
                 .setIcon(targetIcon())
                 .setTitle(dialogTitle(R.string.app_launch_choose_space,
                     intent.getCharSequenceExtra("target")))
@@ -940,6 +969,7 @@ class AppLaunchApprovalActivity : android.app.Activity() {
     }
 
     private fun showApproval(selection: Int, destination: String) {
+        request.selection = selection
         val userIds = intent.getIntArrayExtra("spaceUserIds")
         val selectedUserId = userIds?.getOrNull(selection)
         val content = layoutInflater.inflate(R.layout.dialog_app_launch_approval, null)
@@ -955,6 +985,7 @@ class AppLaunchApprovalActivity : android.app.Activity() {
             .setView(content)
             .setOnCancelListener { respond(-1, 0) }
             .create()
+        activeDialog = dialog
         listOf(R.id.approval_once to 1, R.id.approval_always to 2,
             R.id.approval_deny to 0).forEach { (id, action) ->
             content.findViewById<View>(id).apply {
@@ -972,38 +1003,59 @@ class AppLaunchApprovalActivity : android.app.Activity() {
 
     private fun respond(choice: Int, action: Int) {
         if (replied) return
-        replied = true
-        reply?.sendResult(Bundle().apply {
+        request.replied = true
+        // Capture only retained state. A callback must never launch through a destroyed Activity.
+        val pending = request
+        pending.reply?.sendResult(Bundle().apply {
             putInt("choice", choice)
             putInt("action", action)
             putParcelable("response", android.os.RemoteCallback({ result ->
-                val sender = result?.getParcelable("sender", android.content.IntentSender::class.java)
-                if (sender != null && !isFinishing) {
-                    if (action == 2 && result?.getBoolean("persisted", false) != true) {
-                        android.widget.Toast.makeText(this@AppLaunchApprovalActivity,
-                            R.string.app_launch_save_failed, android.widget.Toast.LENGTH_LONG).show()
-                    }
-                    try {
-                        startIntentSenderForResult(sender, -1, null,
-                            android.content.Intent.FLAG_ACTIVITY_FORWARD_RESULT,
-                            android.content.Intent.FLAG_ACTIVITY_FORWARD_RESULT, 0,
-                            android.app.ActivityOptions.makeBasic().apply {
-                                setPendingIntentBackgroundActivityStartMode(
-                                    android.app.ActivityOptions.MODE_BACKGROUND_ACTIVITY_START_ALLOWED)
-                            }.toBundle())
-                    } catch (_: android.content.IntentSender.SendIntentException) {
-                        android.widget.Toast.makeText(this@AppLaunchApprovalActivity, R.string.cannot_launch_app,
-                            android.widget.Toast.LENGTH_SHORT).show()
-                    }
-                }
-                finish()
+                pending.result = (result ?: Bundle()).apply { putInt("action", action) }
+                pending.activity?.deliverResponse()
             }, android.os.Handler(mainLooper)))
         })
         if (action == 0) finish()
     }
 
+    private fun deliverResponse() {
+        if (isFinishing || isDestroyed) return
+        val result = request.result ?: return
+        request.result = null
+        val action = result.getInt("action", 0)
+        val sender = result.getParcelable("sender", android.content.IntentSender::class.java)
+        if (sender != null) {
+            if (action == 2 && !result.getBoolean("persisted", false)) {
+                Toast.makeText(this, R.string.app_launch_save_failed, Toast.LENGTH_LONG).show()
+            }
+            try {
+                startIntentSenderForResult(sender, -1, null,
+                    android.content.Intent.FLAG_ACTIVITY_FORWARD_RESULT,
+                    android.content.Intent.FLAG_ACTIVITY_FORWARD_RESULT, 0,
+                    android.app.ActivityOptions.makeBasic().apply {
+                        setPendingIntentBackgroundActivityStartMode(
+                            android.app.ActivityOptions.MODE_BACKGROUND_ACTIVITY_START_ALLOWED)
+                    }.toBundle())
+            } catch (_: android.content.IntentSender.SendIntentException) {
+                Toast.makeText(this, R.string.cannot_launch_app, Toast.LENGTH_SHORT).show()
+            }
+        } else if (action != 0) {
+            Toast.makeText(this, R.string.app_launch_expired, Toast.LENGTH_LONG).show()
+        }
+        finish()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putInt("selection", request.selection)
+        outState.putBoolean("replied", replied)
+        super.onSaveInstanceState(outState)
+    }
+
+    override fun onRetainNonConfigurationInstance(): Any = request
+
     override fun onDestroy() {
         if (!isChangingConfigurations && !replied) respond(-1, 0)
+        if (request.activity === this) request.activity = null
+        activeDialog?.dismiss()
         super.onDestroy()
     }
 }
