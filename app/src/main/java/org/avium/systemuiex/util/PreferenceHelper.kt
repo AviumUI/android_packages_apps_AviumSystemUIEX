@@ -43,6 +43,9 @@ object PreferenceHelper {
     const val SYS_PROP_POPUP_GESTURE = "persist.avium.popup_gesture"
     const val KEY_POPUP_GESTURE_FALLBACK = "pop_up_view_gesture_fallback"
 
+    const val SYS_PROP_SMART_SIDEBAR = "persist.avium.smart_sidebar"
+    const val KEY_SMART_SIDEBAR_FALLBACK = "smart_sidebar_fallback"
+
     const val SYS_PROP_LAUNCHER_GESTURE = "persist.avium.launchergesture"
     const val KEY_LAUNCHER_GESTURE_FALLBACK = "launcher_gesture_fallback"
 
@@ -145,6 +148,41 @@ object PreferenceHelper {
             }
         } catch (e: Exception) {
             getBoolean(context, KEY_POPUP_GESTURE_FALLBACK, defaultValue)
+        }
+    }
+
+    fun setSmartSidebarEnabled(context: Context, enabled: Boolean) {
+        val value = if (enabled) "1" else "0"
+        try {
+            SystemProperties.set(SYS_PROP_SMART_SIDEBAR, value)
+            val readBack = SystemProperties.get(SYS_PROP_SMART_SIDEBAR, if (enabled) "0" else "1")
+            if (readBack != value) {
+                // Property survived the write check; keep the fallback in sync anyway so that
+                // the UI and the sidebar agree after a reboot that loses the property.
+                setBoolean(context, KEY_SMART_SIDEBAR_FALLBACK, enabled)
+            } else {
+                setBoolean(context, KEY_SMART_SIDEBAR_FALLBACK, enabled)
+            }
+        } catch (e: Exception) {
+            // Writing system properties is not allowed for every caller; fall back to
+            // SharedPreferences so the switch still works (and the sidebar still reads it).
+            setBoolean(context, KEY_SMART_SIDEBAR_FALLBACK, enabled)
+        }
+    }
+
+    fun isSmartSidebarEnabled(context: Context, defaultValue: Boolean = false): Boolean {
+        return try {
+            val prop = SystemProperties.get(
+                SYS_PROP_SMART_SIDEBAR,
+                if (defaultValue) "1" else "0"
+            )
+            when (prop) {
+                "1", "true", "TRUE" -> true
+                "0", "false", "FALSE" -> false
+                else -> getBoolean(context, KEY_SMART_SIDEBAR_FALLBACK, defaultValue)
+            }
+        } catch (e: Exception) {
+            getBoolean(context, KEY_SMART_SIDEBAR_FALLBACK, defaultValue)
         }
     }
 

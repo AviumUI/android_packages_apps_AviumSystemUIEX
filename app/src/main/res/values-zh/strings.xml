@@ -111,4 +111,6 @@
     <string name="private_space_unlock_failed">无法解锁隐私空间，请重试。</string>
     <string name="private_space_lock">锁定</string>
     <string name="private_space_lock_failed">无法锁定隐私空间，请重试。</string>
+    <string name="smart_sidebar_title">智慧多窗</string>
+    <string name="smart_sidebar_summary">从屏幕左侧或右侧边缘向内滑动并停顿，打开应用侧边栏</string>
 </resources>

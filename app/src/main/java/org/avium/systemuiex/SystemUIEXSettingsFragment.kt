@@ -114,6 +114,10 @@ class SystemUIEXSettingsFragment : SettingsBasePreferenceFragment() {
             PreferenceHelper.setPopupGestureEnabled(context, it)
         }
 
+        bindSwitch(KEY_SMART_SIDEBAR, PreferenceHelper.isSmartSidebarEnabled(context, false)) {
+            PreferenceHelper.setSmartSidebarEnabled(context, it)
+        }
+
         bindSwitch(KEY_LAUNCHER_GESTURE, PreferenceHelper.isLauncherGestureEnabled(context, false)) {
             PreferenceHelper.setLauncherGestureEnabled(context, it)
         }
@@ -190,6 +194,7 @@ class SystemUIEXSettingsFragment : SettingsBasePreferenceFragment() {
     companion object {
         private const val KEY_MANAGE_APPS = "manage_apps"
         private const val KEY_GLOBAL_SIDEBAR = "global_sidebar"
+        private const val KEY_SMART_SIDEBAR = "smart_sidebar"
         private const val KEY_POPUP_GESTURE = "popup_gesture"
         private const val KEY_LAUNCHER_GESTURE = "launcher_gesture"
         private const val KEY_APP_LAUNCH_MODE_PREF = "app_launch_mode_pref"

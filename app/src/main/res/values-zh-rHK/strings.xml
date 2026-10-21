@@ -63,4 +63,6 @@
     <string name="private_space_settings_hint">請在系統安全設定中開啟「私人空間」完成建立。</string>
     <string name="private_space_lock">鎖定</string>
     <string name="private_space_lock_failed">無法鎖定私人空間，請重試。</string>
+    <string name="smart_sidebar_title">智慧多窗</string>
+    <string name="smart_sidebar_summary">從螢幕左側或右側邊緣向內滑動並停頓，開啟應用程式側邊欄</string>
 </resources>

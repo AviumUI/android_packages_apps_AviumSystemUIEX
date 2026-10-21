@@ -82,6 +82,12 @@
             android:defaultValue="false" />
 
         <SwitchPreferenceCompat
+            android:key="smart_sidebar"
+            android:title="@string/smart_sidebar_title"
+            android:summary="@string/smart_sidebar_summary"
+            android:defaultValue="false" />
+
+        <SwitchPreferenceCompat
             android:key="launcher_gesture"
             android:title="@string/launcher_gesture_title"
             android:summary="@string/launcher_gesture_summary"

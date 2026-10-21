@@ -114,4 +114,6 @@
     <string name="private_space_unlock_failed">Unable to unlock private space. Please try again.</string>
     <string name="private_space_lock">Lock</string>
     <string name="private_space_lock_failed">Unable to lock private space. Please try again.</string>
+    <string name="smart_sidebar_title">Smart Multi-Window</string>
+    <string name="smart_sidebar_summary">Swipe inwards from the left or right edge of the screen and pause to open the app sidebar</string>
 </resources>
