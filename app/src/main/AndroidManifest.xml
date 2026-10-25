@@ -34,10 +34,6 @@
             android:exported="true" android:excludeFromRecents="true"
             android:theme="@style/Theme.SystemUIEX.FloatingPicker" />
 
-        <activity android:name=".ui.selection.AppLaunchApprovalActivity"
-            android:exported="false" android:excludeFromRecents="true"
-            android:theme="@style/Theme.SystemUIEX.Approval" />
-
         <activity
             android:name=".MainActivity"
             android:exported="true"
