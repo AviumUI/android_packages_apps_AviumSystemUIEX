@@ -30,6 +30,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.SystemUIEX">
+        <activity android:name=".ui.selection.AppLaunchApprovalActivity"
+            android:exported="false" android:excludeFromRecents="true"
+            android:theme="@style/Theme.SystemUIEX.Approval" />
+
         <activity android:name=".ui.selection.AppLaunchPickerActivity"
             android:exported="true" android:excludeFromRecents="true"
             android:theme="@style/Theme.SystemUIEX.FloatingPicker" />

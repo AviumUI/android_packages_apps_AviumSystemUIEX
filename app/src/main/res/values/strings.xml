@@ -116,4 +116,7 @@
     <string name="private_space_unlock_failed">Unable to unlock private space. Please try again.</string>
     <string name="private_space_lock">Lock</string>
     <string name="private_space_lock_failed">Unable to lock private space. Please try again.</string>
+    <string name="app_launch_choose_app">Choose an app and space</string>
+    <string name="app_launch_another_app">another app</string>
+    <string name="app_launch_choose_after_approval">After allowing, choose the app and space to open. Always allow applies only to that selection.</string>
 </resources>

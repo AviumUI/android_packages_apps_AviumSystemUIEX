@@ -863,6 +863,7 @@ class AppLaunchApprovalActivity : android.app.Activity() {
         var reply: android.os.RemoteCallback? = null
         var replied = false
         var selection = -1
+        var approvalAction = 0
         var result: Bundle? = null
         var activity: AppLaunchApprovalActivity? = null
     }
@@ -903,8 +904,9 @@ class AppLaunchApprovalActivity : android.app.Activity() {
         super.onStop()
     }
 
-    private fun targetIcon(userId: Int? = null): android.graphics.drawable.Drawable? {
-        val packageName = intent.getStringExtra("targetPackage") ?: return null
+    private fun targetIcon(userId: Int? = null, selection: Int = -1): android.graphics.drawable.Drawable? {
+        val packageName = intent.getStringArrayExtra("targetPackages")?.getOrNull(selection)
+            ?: intent.getStringExtra("targetPackage") ?: return null
         return try {
             val targetContext = if (userId == null || userId < 0) this
                 else createContextAsUser(android.os.UserHandle.of(userId), 0)
@@ -947,40 +949,48 @@ class AppLaunchApprovalActivity : android.app.Activity() {
             }
             labels[index] = "${getString(label)} · ${labels[index]}"
         }
-        val remembered = intent.getBooleanArrayExtra("remembered")
         if (replied) return // onStart will receive/deliver the retained response.
-        if (request.selection in labels.indices) {
-            showApproval(request.selection, labels[request.selection])
-        } else if (labels.size > 1) {
-            activeDialog = com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
-                .setIcon(targetIcon())
-                .setTitle(dialogTitle(R.string.app_launch_choose_space,
-                    intent.getCharSequenceExtra("target")))
-                .setItems(labels) { _, choice ->
-                    if (remembered?.getOrNull(choice) == true) respond(choice, 1)
-                    else showApproval(choice, labels[choice])
-                }
-                .setNegativeButton(R.string.app_launch_deny) { _, _ -> respond(-1, 0) }
-                .setOnCancelListener { respond(-1, 0) }
-                .show()
-        } else if (remembered?.getOrNull(0) == true) {
-            respond(0, 1)
-        } else showApproval(0, labels[0])
+        if (request.approvalAction != 0) {
+            chooseApprovedDestination(labels)
+        } else {
+            showApproval(labels)
+        }
     }
 
-    private fun showApproval(selection: Int, destination: String) {
-        request.selection = selection
-        val userIds = intent.getIntArrayExtra("spaceUserIds")
-        val selectedUserId = userIds?.getOrNull(selection)
+    private fun chooseApprovedDestination(labels: Array<String>) {
+        if (replied || request.approvalAction == 0) return
+        if (labels.size == 1) {
+            request.selection = 0
+            respond(0, request.approvalAction)
+            return
+        }
+        activeDialog = com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.app_launch_choose_app)
+            .setItems(labels) { _, choice ->
+                request.selection = choice
+                respond(choice, request.approvalAction)
+            }
+            .setNegativeButton(R.string.app_launch_deny) { _, _ -> respond(-1, 0) }
+            .setOnCancelListener { respond(-1, 0) }
+            .show()
+        activeDialog?.window?.addSystemFlags(
+            android.view.WindowManager.LayoutParams.SYSTEM_FLAG_HIDE_NON_SYSTEM_OVERLAY_WINDOWS)
+    }
+
+    private fun showApproval(labels: Array<String>) {
+        val single = labels.size == 1
+        val userId = if (single) intent.getIntArrayExtra("spaceUserIds")?.getOrNull(0) else null
+        val destination = if (single) labels[0] else getString(R.string.app_launch_another_app)
         val content = layoutInflater.inflate(R.layout.dialog_app_launch_approval, null)
         content.findViewById<ImageView>(R.id.approval_icon).apply {
-            setImageDrawable(targetIcon(selectedUserId))
+            setImageDrawable(if (single) targetIcon(userId, 0) else null)
             visibility = if (drawable == null) View.GONE else View.VISIBLE
         }
         content.findViewById<TextView>(R.id.approval_title).text =
             dialogTitle(R.string.app_launch_request,
-                intent.getCharSequenceExtra("source"), intent.getCharSequenceExtra("target"))
-        content.findViewById<TextView>(R.id.approval_destination).text = destination
+                intent.getCharSequenceExtra("source"), destination)
+        content.findViewById<TextView>(R.id.approval_destination).text =
+            if (single) destination else getString(R.string.app_launch_choose_after_approval)
         val dialog = com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
             .setView(content)
             .setOnCancelListener { respond(-1, 0) }
@@ -991,8 +1001,17 @@ class AppLaunchApprovalActivity : android.app.Activity() {
             content.findViewById<View>(id).apply {
                 filterTouchesWhenObscured = true
                 setOnClickListener {
-                    respond(if (action == 0) -1 else selection, action)
-                    dialog.dismiss()
+                    if (replied || request.approvalAction != 0) return@setOnClickListener
+                    if (action == 0) {
+                        respond(-1, 0)
+                        dialog.dismiss()
+                    } else {
+                        // Retain approval across rotation, but do not authorize any sender
+                        // until the user has also chosen the concrete application and space.
+                        request.approvalAction = action
+                        dialog.dismiss()
+                        chooseApprovedDestination(labels)
+                    }
                 }
             }
         }

@@ -113,4 +113,7 @@
     <string name="private_space_unlock_failed">无法解锁隐私空间，请重试。</string>
     <string name="private_space_lock">锁定</string>
     <string name="private_space_lock_failed">无法锁定隐私空间，请重试。</string>
+    <string name="app_launch_choose_app">选择应用和空间</string>
+    <string name="app_launch_another_app">另一个应用</string>
+    <string name="app_launch_choose_after_approval">允许后选择要打开的应用和空间。“始终允许”仅适用于最终选择。</string>
 </resources>
